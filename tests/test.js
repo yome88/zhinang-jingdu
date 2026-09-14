@@ -11,15 +11,16 @@ function ok(cond, name){
   else { fail++; console.log("  ✗ " + name); }
 }
 
-// 提取 JS 段并在沙箱中求值
-const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
-if(!scriptMatch){ console.log("✗ 未找到 script 段"); process.exit(1); }
+// 提取包含 STORIES 的主脚本段并在沙箱中求值（页面上可能有多个 script 标签）
+const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+const mainScript = scripts.find(s=>s.includes("const STORIES"));
+if(!mainScript){ console.log("✗ 未找到主 script 段"); process.exit(1); }
 const sandbox = {};
 const vm = require("vm");
 // 只执行数据声明部分（到 SPIRAL 定义为止），避免 DOM 依赖
-const dataCode = scriptMatch[1].split("/* ═══════════ 状态与存储")[0];
+const dataCode = mainScript.split("/* ═══════════ 状态与存储")[0];
 // SPIRAL / MILESTONES / STAGE_SIZE 定义在逻辑段，单独提取其 const 声明行
-const extraLines = scriptMatch[1].split("\n").filter(l=>/^const SPIRAL =/.test(l)).join("\n");
+const extraLines = mainScript.split("\n").filter(l=>/^const SPIRAL =/.test(l)).join("\n");
 const ctx = vm.createContext(sandbox);
 vm.runInContext(dataCode + "\n" + extraLines + "\nthis.STORIES=STORIES; this.DEPTS=DEPTS; this.SPIRAL=SPIRAL; this.MILESTONES=MILESTONES; this.STAGE_SIZE=STAGE_SIZE;", ctx);
 const { STORIES, DEPTS, SPIRAL, STAGE_SIZE } = sandbox;
