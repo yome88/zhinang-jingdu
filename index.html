@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta http-equiv="refresh" content="0; url=./%E6%99%BA%E5%9B%8A%E7%B2%BE%E8%AF%BBApp.html">
 <link rel="manifest" href="manifest.json">
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
 <title>智囊精读</title>
 </head>
 <body style="font-family:serif;background:#f7f2e7;text-align:center;padding-top:40vh">
