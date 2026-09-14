@@ -1,5 +1,6 @@
 *.png
 !icons/*.png
+!docs/screenshots/*.png
 
 # 安卓打包包与签名密钥（敏感，绝不入库）
 apk-test/
