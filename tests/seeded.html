@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智囊精读 · 亲子共读</title>
+<style>
+  :root{
+    --paper:#f7f2e7; --paper2:#efe7d5; --ink:#2b2620; --ink2:#5a5245;
+    --seal:#a63a2b; --seal2:#8c2f23; --gold:#b08d57; --line:#d8cdb4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(176,141,87,.06), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(166,58,43,.04), transparent 50%);
+    color:var(--ink);
+    font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
+    min-height:100vh;
+  }
+  header{
+    border-bottom:2px solid var(--ink);
+    padding:18px 28px 14px;
+    display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    background:linear-gradient(to bottom, var(--paper2), var(--paper));
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .seal{
+    width:52px;height:52px;background:var(--seal);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;line-height:1.05;text-align:center;border-radius:6px;
+    writing-mode:vertical-rl;box-shadow:2px 2px 0 rgba(0,0,0,.15);transform:rotate(-2deg);
+  }
+  h1{font-size:30px;letter-spacing:10px}
+  .subtitle{font-size:12px;color:var(--ink2);letter-spacing:4px;margin-top:4px}
+  .progress-pill{
+    font-size:14px;color:var(--ink2);border:1px solid var(--line);
+    padding:6px 16px;border-radius:20px;background:#fff8
+  }
+  .progress-pill b{color:var(--seal);font-size:18px}
+  nav{display:flex;border-bottom:1px solid var(--line);background:var(--paper2);padding:0 28px;flex-wrap:wrap}
+  nav button{
+    font-family:inherit;font-size:16px;letter-spacing:4px;padding:12px 26px;
+    background:none;border:none;cursor:pointer;color:var(--ink2);border-bottom:3px solid transparent;
+  }
+  nav button.active{color:var(--seal);border-bottom-color:var(--seal);font-weight:700}
+  nav button:hover{color:var(--ink)}
+  main{max-width:880px;margin:0 auto;padding:28px 20px 80px}
+  .page{display:none}
+  .page.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  .scroll-card{
+    background:#fffdf6;border:1px solid var(--line);border-left:4px solid var(--gold);
+    box-shadow:0 2px 10px rgba(90,80,60,.10);padding:24px 28px;margin-bottom:20px;
+  }
+  .scroll-card h2{font-size:20px;letter-spacing:3px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tag{font-size:11px;letter-spacing:1px;padding:2px 9px;border-radius:3px;border:1px solid var(--gold);color:var(--gold)}
+  .tag.dept{border-color:var(--seal);color:var(--seal)}
+  .guten{
+    font-size:18px;line-height:2.1;letter-spacing:2px;padding:14px 18px;
+    background:var(--paper);border:1px dashed var(--line);margin:10px 0;
+  }
+  .vernacular{font-size:15px;line-height:1.9;color:var(--ink2);margin:8px 0 4px}
+  .label{display:inline-block;font-size:12px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:2px 10px;border-radius:2px;margin:14px 0 4px}
+  .label.red{background:var(--seal)} .label.gold{background:var(--gold)}
+  .curtain{text-align:center;padding:34px 20px;margin:18px 0;border:2px dashed var(--seal);background:#fdf6ee}
+  .curtain .q{font-size:20px;color:var(--seal);letter-spacing:4px;margin-bottom:16px;line-height:2}
+  textarea{
+    width:100%;min-height:80px;font-family:inherit;font-size:16px;padding:12px 14px;
+    border:1px solid var(--line);background:#fff;resize:vertical;line-height:1.8;
+  }
+  textarea:focus{outline:2px solid var(--gold)}
+  input[type=text]{
+    width:100%;font-family:inherit;font-size:15px;padding:9px 12px;
+    border:1px solid var(--line);background:#fff;
+  }
+  .btn{
+    font-family:inherit;font-size:16px;letter-spacing:4px;cursor:pointer;padding:10px 30px;
+    margin-top:14px;border:none;border-radius:4px;background:var(--seal);color:#fff;
+    box-shadow:2px 2px 0 rgba(0,0,0,.15);transition:transform .1s;
+  }
+  .btn:hover{transform:translateY(-1px);background:var(--seal2)}
+  .btn.ghost{background:none;color:var(--ink2);border:1px solid var(--line);box-shadow:none;font-size:13px}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .vs{display:flex;gap:16px;margin:14px 0;flex-wrap:wrap}
+  .vs>div{flex:1;min-width:260px;padding:16px;border:1px solid var(--line);background:#fff}
+  .vs .mine{border-top:3px solid var(--gold)} .vs .his{border-top:3px solid var(--seal)}
+  .vs h4{font-size:14px;letter-spacing:3px;margin-bottom:8px;color:var(--ink2)}
+  .vs p{font-size:15px;line-height:1.8}
+  .attitudes{display:flex;gap:12px;margin:10px 0;flex-wrap:wrap}
+  .attitudes button{font-family:inherit;font-size:16px;padding:8px 20px;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:20px}
+  .attitudes button.on{background:var(--seal);color:#fff;border-color:var(--seal)}
+  .hint{font-size:14px;color:var(--ink2);background:var(--paper);border-left:3px solid var(--gold);padding:10px 14px;margin:8px 0;line-height:1.8}
+  /* 书目 */
+  .dept-block{margin-bottom:26px}
+  .dept-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .dept-head h3{font-size:19px;letter-spacing:3px}
+  .dept-head .cnt{font-size:13px;color:var(--ink2)}
+  .stamp{
+    display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;
+    border:2px solid var(--seal);border-radius:4px;color:var(--seal);font-size:13px;
+    transform:rotate(-4deg);opacity:.9;margin-left:auto;
+  }
+  .stamp.locked{border-color:var(--line);color:#c5b99e}
+  .story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .story-item{background:#fffdf6;border:1px solid var(--line);padding:12px 14px;cursor:pointer;position:relative;transition:box-shadow .15s}
+  .story-item:hover{box-shadow:0 2px 8px rgba(90,80,60,.18)}
+  .story-item .t{font-size:16px;letter-spacing:2px}
+  .story-item .st{font-size:12px;margin-top:6px;letter-spacing:1px}
+  .st.done{color:var(--seal)} .st.todo{color:var(--gold)} .st.pool{color:#b7ab8f}
+  .story-item.done::after{
+    content:"已读";position:absolute;right:8px;top:8px;color:var(--seal);
+    border:1.5px solid var(--seal);border-radius:3px;font-size:11px;padding:1px 5px;transform:rotate(-8deg);opacity:.85;
+  }
+  /* 卡片墙 */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .wis-card{background:#fffdf6;border:1px solid var(--line);padding:18px;border-top:4px solid var(--seal);box-shadow:0 2px 8px rgba(90,80,60,.10);cursor:pointer}
+  .wis-card .from{font-size:12px;color:var(--ink2);letter-spacing:2px;margin-bottom:8px}
+  .wis-card .heart{font-size:17px;line-height:1.9;letter-spacing:1px}
+  .wis-card .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .wis-card .tags span{font-size:11px;background:var(--paper);border:1px solid var(--line);padding:2px 8px;border-radius:10px;color:var(--ink2)}
+  .empty{padding:40px;text-align:center;color:var(--ink2);font-size:15px;letter-spacing:2px;border:1px dashed var(--line)}
+  /* 详情弹层 */
+  .modal{position:fixed;inset:0;background:rgba(43,38,32,.45);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
+  .modal.show{display:flex}
+  .modal-box{background:var(--paper);border:2px solid var(--ink);max-width:640px;width:100%;max-height:85vh;overflow-y:auto;padding:26px 30px;position:relative}
+  .modal-box h3{font-size:20px;letter-spacing:3px;margin-bottom:6px}
+  .modal-box .close-x{position:absolute;top:12px;right:16px;font-size:18px;background:none;border:none;cursor:pointer;color:var(--ink2);font-family:inherit}
+  .kv{margin:12px 0}
+  .kv .k{font-size:12px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:2px 10px;border-radius:2px;display:inline-block;margin-bottom:4px}
+  .kv .v{font-size:15px;line-height:1.9;padding:6px 2px}
+  /* 开讲模式 */
+  .lecture{position:fixed;inset:0;background:var(--paper);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+  .lecture.show{display:flex}
+  .lecture .lt{font-size:34px;letter-spacing:8px;margin-bottom:26px;color:var(--seal)}
+  .lecture .lc{font-size:26px;line-height:2.2;letter-spacing:3px;max-width:720px;text-align:center}
+  .lecture .close{position:absolute;top:24px;right:30px;font-size:15px}
+  /* 总结 */
+  .summary-q{font-size:16px;line-height:2;padding:10px 0 10px 18px;border-left:3px solid var(--seal);margin:10px 0;background:#fffdf6}
+  .archive-item{border:1px solid var(--line);background:#fffdf6;padding:16px 20px;margin-bottom:14px}
+  .archive-item .d{font-size:12px;color:var(--ink2);letter-spacing:2px;margin-bottom:6px}
+  .archive-item .b{font-size:15px;line-height:1.9;white-space:pre-wrap}
+  .toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap}
+  .milestone{display:inline-block;margin:4px 8px 0 0;padding:4px 12px;border:1px solid var(--line);border-radius:16px;font-size:13px;color:#b7ab8f}
+  .milestone.got{border-color:var(--seal);color:var(--seal);background:#fdf6ee}
+  .footer-note{text-align:center;font-size:12px;color:#b7ab8f;letter-spacing:3px;margin-top:50px;padding-bottom:30px}
+  .toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--paper);padding:10px 26px;border-radius:4px;
+    font-size:14px;letter-spacing:3px;display:none;z-index:99;
+  }
+  @media print{
+    header,nav,.toolbar,.btn,.footer-note{display:none!important}
+    body{background:#fff}
+    .page{display:block!important}
+  }
+</style>
+<script>if(!localStorage.getItem('zhinang-jingdu-v1'))localStorage.setItem('zhinang-jingdu-v1','{"plan": ["bingji", "zhangju", "simaguang", "hanxin", "guanzhong", "banchao", "wangrong", "linxiangru", "tianji", "yanzi", "caochong", "zichan"], "records": {"bingji": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757000000000}, "zhangju": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757086400000}, "simaguang": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757172800000}, "hanxin": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757259200000}, "guanzhong": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757345600000}, "banchao": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757432000000}, "wangrong": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757518400000}, "linxiangru": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757604800000}, "tianji": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757691200000}}, "summaries": [{"date": 1757600000000, "count": 8, "q1": "最佩服缇萦，她一个小女孩敢给皇帝写信。", "q2": "不太认同孙膑减灶，骗人总觉得不太好。", "q3": "王戎识李：同学发的「免费领皮肤」链接我没点。"}]}');</script></head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="seal">智囊</div>
+    <div>
+      <h1>智囊精读</h1>
+      <div class="subtitle">亲子共读 · 每日一则 · 先想后揭晓</div>
+    </div>
+  </div>
+  <div class="progress-pill" id="progressPill"></div>
+</header>
+
+<nav>
+  <button class="active" data-page="today">今日阅读</button>
+  <button data-page="catalog">书目总览</button>
+  <button data-page="cards">智慧卡片</button>
+  <button data-page="summary">阶段总结</button>
+</nav>
+
+<main>
+  <section class="page active" id="page-today">
+    <div id="milestoneBar" style="margin-bottom:14px"></div>
+    <div class="scroll-card" id="reader"></div>
+  </section>
+
+  <section class="page" id="page-catalog">
+    <p class="vernacular" style="margin-bottom:18px">《智囊》十部精选。点击「未入选」篇目可加入阅读计划；点击「在计划中」篇目直接开读；盖「已读」印者为已完成。</p>
+    <div id="catalogList"></div>
+  </section>
+
+  <section class="page" id="page-cards">
+    <div class="toolbar">
+      <select id="tagFilter" style="font-family:inherit;padding:6px 10px;border:1px solid var(--line);background:#fff">
+        <option value="">全部标签</option>
+      </select>
+      <button class="btn ghost" id="lectureBtn">📢 开讲模式</button>
+    </div>
+    <div class="cards" id="cardWall"></div>
+  </section>
+
+  <section class="page" id="page-summary">
+    <div class="toolbar">
+      <button class="btn ghost" id="exportBtn">⤓ 导出备份</button>
+      <button class="btn ghost" id="importBtn">⤒ 导入恢复</button>
+      <button class="btn ghost" id="printBtn">🖨 打印成册</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+    </div>
+    <div id="summaryArea"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="close-x" id="modalClose">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="lecture" id="lecture">
+  <button class="btn ghost close" id="lectureClose">收起 ✕</button>
+  <div class="lt" id="lectureTitle"></div>
+  <div class="lc" id="lectureContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="footer-note">智囊精读 · v1.0 · 数据保存在本机浏览器</div>
+
+<script>
+/* ═══════════ 篇目数据 · 十则精选（螺旋编排） ═══════════ */
+const STORIES = [
+{id:"bingji", dept:"上智部", level:"🌱 入门", title:"丙吉问牛",
+ act1:"汉相丙吉出，逢群斗，死伤横道，吉过之不问。前行，逢人逐牛，牛喘吐舌。吉止驻，使骑吏问：「逐牛行几里矣？」",
+ act1v:"汉代丞相丙吉出行，路上遇到一群人斗殴，死伤的人横在路上，丙吉经过却不闻不问。再往前走，看见有人赶牛，牛喘着气吐着舌头。丙吉却停下车，派随从去问：「你赶着牛走了几里路了？」",
+ act2:"掾史怪其失问。吉曰：「民斗相杀伤，长安令、京兆尹职所当禁，宰相不亲小事。方春少阳用事，未可大热，恐牛近行，用暑故喘，此时气失节，恐有伤害。三公典调和阴阳，职当忧，是以问之。」掾史乃服，以吉知大体。",
+ act2v:"属官们觉得丞相问错了对象。丙吉说：「百姓斗殴伤亡，是长安令、京兆尹该管的事，宰相不亲自管小事。现在正是春天，天不该这么热，我怕牛没走多远就喘，是天时反常的征兆——这才是宰相该忧虑的大事，所以要问。」属官们这才佩服，认为丙吉懂得什么是大局。",
+ note:"「宰相不亲小事。」—— 冯梦龙借此事说：真正的格局，是知道什么事该自己操心，什么事该交给别人。",
+ hint:"校园生活：你在班上会不会什么都想管？哪些事该交给值日生、老师，哪些事才最该你操心？",
+ tags:["格局","取舍"]},
+
+{id:"zhangju", dept:"察智部", level:"🌿 进阶", title:"张举焚猪",
+ act1:"张举为句章令。有妻杀其夫，因放火烧舍，称「火烧夫死」。夫家疑之，诣官诉妻，妻拒而不认。",
+ act1v:"张举担任句章县令。有个妻子杀了丈夫，然后放火烧了房子，谎称「丈夫是被火烧死的」。夫家起了疑心，告到官府，妻子拒不承认。",
+ act2:"举乃取猪二口，一杀之，一活之，而积薪焚之。活者口中有灰，杀者口中无灰。因验尸，口果无灰也，鞫之服罪。",
+ act2v:"张举让人牵来两头猪，一头先杀死，一头留活口，一起堆上柴火烧。烧完后，活猪嘴里有灰，死猪嘴里没有灰。再验尸，死者嘴里果然没有灰——说明起火之前人就已经死了。妻子只得认罪。",
+ note:"「以猪证理。」—— 讲不清的道理，做个实验就明白了。",
+ hint:"求真：同学之间各说各的理、谁也说服不了谁的时候，能不能像张举一样，找个办法「验证」一下？",
+ tags:["思辨","求真"]},
+
+{id:"simaguang", dept:"捷智部", level:"🌱 入门", title:"司马光击瓮",
+ act1:"司马光幼与群儿戏于庭。一儿登瓮，足跌没水中，众皆弃去。",
+ act1v:"司马光小时候和一群孩子在庭院里玩。一个孩子爬上一只大水缸，失足掉进去被水淹没了，其他孩子都吓得跑掉了。",
+ act2:"光持石击瓮破之，水迸，儿得活。",
+ act2v:"司马光拿起石头把水缸砸破，水涌出来，孩子得救了。",
+ note:"「众皆弃去，光持石击瓮。」—— 别人想的是「把人从水里捞出来」，司马光反过来想：「让水离开人」。",
+ hint:"应变：遇到紧急情况，大家都朝一个方向想办法时，能不能反过来想一想？比如够不到高处的东西，除了垫高自己，还能怎样？",
+ tags:["应变","冷静"]},
+
+{id:"guanzhong", dept:"明智部", level:"🌿 进阶", title:"管仲识人",
+ act1:"管仲病，桓公问曰：「群臣谁可相者？」管仲曰：「知臣莫如君。」公曰：「易牙如何？」对曰：「杀子以适君，非人情，不可。」",
+ act1v:"管仲病重，齐桓公问：「大臣中谁可以接任宰相？」管仲说：「最了解臣子的莫过于君主您。」桓公问：「易牙怎么样？」管仲答：「他杀了自己的儿子做菜讨好您，这不合人情，不能信任。」",
+ act2:"公曰：「开方如何？」对曰：「倍亲以适君，非人情，难近。」公曰：「竖刁如何？」对曰：「自宫以适君，非人情，难亲。」管仲死，公不用其言，近三子。二年，三子作乱，桓公饿死宫中，尸虫出于户。",
+ act2v:"桓公又问开方、竖刁。管仲说：一个背叛父母、一个残害身体来讨好您，都不合人情，不可亲近。管仲死后，桓公没听他的话，亲近这三人。两年后三人作乱，把桓公围困在宫中，桓公活活饿死，死后很久都没人收尸。",
+ note:"「非人情，不可近。」—— 一个人对至亲都能下狠手，他对你的好，多半另有所图。",
+ hint:"网络与信息：网上有人对你特别好、什么都顺着你——怎么判断他是真朋友，还是另有所图？",
+ tags:["识人","网络与信息"]},
+
+{id:"linxiangru", dept:"胆智部", level:"🌿 进阶", title:"蔺相如完璧归赵",
+ act1:"赵王得楚和氏璧，秦昭王闻之，愿以十五城请易璧。蔺相如奉璧入秦。秦王坐章台见相如，得璧，传以示美人及左右，左右皆呼万岁。相如视秦王无意偿赵城。",
+ act1v:"赵王得到楚国的和氏璧，秦昭王听说后，提出用十五座城来换。蔺相如捧着璧出使秦国。秦王在章台宫接见他，拿到璧后，传给嫔妃和侍从们观赏，大家都高呼万岁。蔺相如看出来：秦王根本没有给赵国城池的诚意。",
+ act2:"相如乃前曰：「璧有瑕，请指示王。」王授璧。相如因持璧却立，倚柱，怒发上冲冠，曰：「大王必欲急臣，臣头今与璧俱碎于柱矣！」秦王恐其破璧，乃辞谢固请。相如度秦王特以诈，乃使其从者衣褐，怀其璧，从径道亡，归璧于赵。",
+ act2v:"蔺相如上前说：「璧上有个斑点，请让我指给大王看。」秦王把璧递还给他。相如拿璧退后几步，靠柱子站定，怒发冲冠，说：「大王如果一定要逼我，我的头今天就和璧一起撞碎在这柱子上！」秦王怕他真把璧摔碎，只好道歉。相如料定秦王只是用诈，便让随从换上粗布衣服，把璧揣在怀里，抄小路送回赵国。",
+ note:"「持璧却立，怒发上冲冠。」—— 真正的勇气不是不怕，而是手里有筹码、心里有分寸。",
+ hint:"勇气：如果明知道对方比你强大又不讲理，硬碰硬和想办法周旋，哪个更需要勇气？",
+ tags:["勇气","智慧"]},
+
+{id:"wangrong", dept:"捷智部", level:"🌱 入门", title:"王戎识苦李",
+ act1:"王戎七岁，尝与诸小儿游。看道边李树多子折枝，诸儿竞走取之，唯戎不动。",
+ act1v:"王戎七岁时，曾和一群小孩出去玩。大家看见路边的李树结满了果子，把枝条都压弯了，小孩们争相跑去摘，只有王戎站着不动。",
+ act2:"人问之，答曰：「树在道边而多子，此必苦李。」取之，信然。",
+ act2v:"有人问他为什么不去，他回答：「树长在路边，果子却还有这么多没人摘，这一定是苦的李子。」摘来一尝，果然如此。",
+ note:"「树在道边而多子，此必苦李。」—— 好事情如果唾手可得却没人要，先别急着高兴，想想为什么。",
+ hint:"网络与信息：网上「免费领皮肤」「扫码送大奖」这类好事，人人都能看到却「人人有份」——用王戎的思路想一想，可能有什么问题？",
+ tags:["思辨","识人"]},
+
+{id:"yanzi", dept:"语智部", level:"🌿 进阶", title:"晏子使楚",
+ act1:"晏子使楚。楚人以晏子短，为小门于大门之侧而延晏子。",
+ act1v:"晏子出使楚国。楚国人因为晏子个子矮，故意在大门旁边开了一扇小门，请他从小门进去，想羞辱他。",
+ act2:"晏子不入，曰：「使狗国者，从狗门入；今臣使楚，不当从此门入。」傧者更道，从大门入。",
+ act2v:"晏子不肯进，说：「出使狗国的人，才从狗门进；今天我出使的是楚国，不该从这扇门进。」迎接的官员只好改道，请他从大门进去。",
+ note:"「使狗国者从狗门入。」—— 不接对方的羞辱，而是把羞辱轻轻推回去。",
+ hint:"校园生活：有同学拿你的外貌或短处开玩笑，除了生气和忍着，还能怎样像晏子一样「把话推回去」？",
+ tags:["应变","尊严"]},
+
+{id:"caochong", dept:"捷智部", level:"🌱 入门", title:"曹冲称象",
+ act1:"曹冲幼有智意。时孙权曾致巨象，太祖欲知其斤重，访之群下，咸莫能出其理。",
+ act1v:"曹冲从小就很聪明。当时孙权送来一头大象，曹操想知道大象有多重，问遍了手下的官员，谁都拿不出办法。",
+ act2:"冲曰：「置象大船之上，而刻其水痕所至，称物以载之，则校可知矣。」太祖大悦，即施行焉。",
+ act2v:"曹冲说：「把大象牵到大船上，在船舷上刻下水面的位置；再把大象牵走，往船上装其他东西，装到水面回到刻痕为止——称一称这些东西，就知道大象的重量了。」曹操非常高兴，立刻照办。",
+ note:"「置象大船之上。」—— 称不动的东西，换成称得动的东西。难题常常不是解不开，而是该换个东西来「代替」它。",
+ hint:"学习：做数学题或搭积木卡住时，有没有试过像曹冲一样，找一个「能代替它」的办法？",
+ tags:["思辨","智慧"]},
+
+{id:"wenyanbo", dept:"捷智部", level:"🌱 入门", title:"文彦博灌水取球",
+ act1:"文彦博幼时与群儿击球，球忽跃入柱穴中，穴深，不能取。群儿谋取之，或以手探，不及。",
+ act1v:"文彦博小时候和一群孩子玩球，球忽然蹦进了一个深深的柱子洞里，怎么也拿不出来。孩子们想办法，有的伸手去掏，够不着。",
+ act2:"彦博以水灌之，球遂浮出。",
+ act2v:"文彦博提来水灌进洞里，球就浮上来了。",
+ note:"「以水灌之。」—— 手够不着的东西，让水替你够。工具，就是手臂的延长。",
+ hint:"家庭日常：东西掉到沙发底下、缝隙里，手够不着时，你能想出几种「让工具替你够」的办法？",
+ tags:["应变","智慧"]},
+
+{id:"sunbin", dept:"兵智部", level:"🌳 挑战", title:"孙膑减灶",
+ act1:"魏将庞涓伐韩，齐使孙膑救韩，直走魏都。庞涓弃韩而归，追击齐军。膑令齐军入魏地为十万灶，明日为五万灶，又明日为三万灶。",
+ act1v:"魏国大将庞涓攻打韩国，齐国派孙膑救韩，直接杀向魏国都城。庞涓只好放弃韩国回师，追击齐军。孙膑命令齐军进入魏国后，第一天垒十万人做饭的灶，第二天只垒五万，第三天只垒三万。",
+ act2:"庞涓行三日，大喜曰：「我固知齐军怯，入吾地三日，士卒亡者过半矣！」乃弃其步军，与其轻锐倍日并行逐之。孙子度其行，暮当至马陵，乃斫大树白而书之曰：「庞涓死于此树之下。」伏弩万余，夹道而伏。涓夜至，见白书，钻火读之，未毕，万弩俱发，魏军大乱。庞涓自知智穷兵败，乃自刭。",
+ act2v:"庞涓追了三天，看到灶越来越少，大喜：「我早就知道齐军胆小，进我魏国才三天，士兵就跑掉一大半了！」于是丢下步兵，只带轻骑兵日夜兼程追赶。孙膑估算他傍晚正好赶到马陵，便砍白一棵大树的树皮，写上「庞涓死于此树之下」，埋伏一万弓弩手在道路两旁。庞涓夜里赶到，看见树上的字，点火来读，还没读完，万箭齐发，魏军大乱。庞涓知道自己智谋用尽、败局已定，拔剑自刎。",
+ note:"「减灶诱敌。」—— 孙膑利用的是庞涓的骄傲。读这则故事要想一想：被夸「勇敢追击」的庞涓，到底错在哪一步？以诈取胜，在今天还站得住脚吗？",
+ hint:"批判讨论：孙膑赢了，但他用的是「让对方误判」的欺骗手段。在竞争和游戏中，怎样的「策略」是聪明的，怎样的就过了线？",
+ tags:["思辨","诚信","格局"]},
+
+{id:"hanxin", dept:"上智部", level:"🌿 进阶", title:"韩信忍胯下之辱",
+ act1:"韩信贫贱时，淮阴屠中少年有侮信者，曰：「若虽长大，好带刀剑，中情怯耳。」众辱之曰：「信能死，刺我；不能死，出我胯下！」",
+ act1v:"韩信穷困时，淮阴一个屠夫家的少年侮辱他，说：「你虽然长得高大，喜欢带刀佩剑，其实胆子很小。」又当众羞辱他说：「韩信，你要是不怕死，就拿剑刺我；要是怕死，就从我裤裆底下钻过去！」",
+ act2:"于是信孰视之，俯出胯下，蒲伏。一市人皆笑信，以为怯。后信为楚王，召辱己之少年，以为中尉，告诸将相曰：「此壮士也。方辱我时，我宁不能杀之邪？杀之无名，故忍而就于此。」",
+ act2v:"韩信盯着他看了很久，终于俯下身，从他胯下爬了过去。满街的人都笑话韩信，认为他胆小。后来韩信被封为楚王，反而召来当年羞辱他的少年，任命他做中尉，并对将士们说：「这是位壮士。当初他侮辱我时，我难道不能杀了他吗？杀了他没有任何意义，所以我忍下来，才有了今天。」",
+ note:"「杀之无名，故忍而就于此。」—— 真正的勇敢不是什么都敢拼，而是知道什么值得拼。",
+ hint:"校园生活：如果同学当众挑衅你、让你「是某某就怎样怎样」，接招和忍住，哪个更需要力量？",
+ tags:["格局","沉住气"]},
+
+{id:"zichan", dept:"上智部", level:"🌿 进阶", title:"子产不毁乡校",
+ act1:"郑人游于乡校，以论执政。然明谓子产曰：「毁乡校，何如？」",
+ act1v:"郑国人常在乡校（乡里的学校和公共场所）聚会，议论执政者的得失。大夫然明对子产说：「把乡校拆了，怎么样？」",
+ act2:"子产曰：「何为？夫人朝夕退而游焉，以议执政之善否。其所善者，吾则行之；其所恶者，吾则改之，是吾师也，若之何毁之？我闻忠善以损怨，不闻作威以防怨。」仲尼闻是语也，曰：「以是观之，人谓子产不仁，吾不信也。」",
+ act2v:"子产说：「为什么要拆？人们早晚到那里聚会，议论政事的好坏。他们认为好的，我就推行；他们讨厌的，我就改正——这地方是我的老师，怎么能拆呢？我只听说用忠诚行善来减少怨言，没听说靠威势来堵住怨言。」孔子听到这件事后说：「由此看来，有人说子产不仁，我是不信的。」",
+ note:"「其所恶者，吾则改之，是吾师也。」—— 把批评当成老师，而不是当成敌人。",
+ hint:"家庭日常：如果同学背后议论你，你希望堵住他们的嘴，还是听听他们说的有没有道理？爸爸妈妈批评你的时候呢？",
+ tags:["格局","思辨"]},
+
+{id:"qixi", dept:"上智部", level:"🌱 入门", title:"祁奚荐贤",
+ act1:"晋大夫祁奚老，请致仕。晋侯问：「孰可使嗣？」",
+ act1v:"晋国大夫祁奚年老了，请求退休。晋侯问他：「谁可以接替你的职位？」",
+ act2:"祁奚对曰：「解狐可。」君曰：「非子之仇邪？」对曰：「君问可，非问臣之仇也。」及解狐卒，君又问，对曰：「午可。」君曰：「非子之子邪？」对曰：「君问可，非问臣之子也。」君子谓祁奚能举善矣：外举不避仇，内举不避亲。",
+ act2v:"祁奚回答：「解狐可以。」晋侯问：「他不是你的仇人吗？」祁奚说：「您问的是谁可以胜任，不是问谁是我的仇人。」后来解狐去世，晋侯再问，祁奚答：「祁午可以。」晋侯问：「他不是你的儿子吗？」祁奚说：「您问的是谁可以胜任，不是问谁是我的儿子。」君子称赞祁奚能推举贤人：举荐外人，不避开仇人；举荐亲人，也不避嫌。",
+ note:"「外举不避仇，内举不避亲。」—— 荐人只看合不合适，不看和自己亲不亲、仇不仇。",
+ hint:"校园生活：选小组长时，你会投给最好的朋友，还是最适合的人？如果你的「对头」确实最合适，你投得下手吗？",
+ tags:["格局","诚信"]},
+
+{id:"banchao", dept:"胆智部", level:"🌿 进阶", title:"班超夜袭虏使",
+ act1:"班超出使西域，至鄯善。鄯善王广奉超礼敬甚备，后忽更疏懈。超谓其官属曰：「宁觉广礼意薄乎？此必有北虏使来，狐疑未知所从故也。」",
+ act1v:"班超出使西域，到达鄯善国。鄯善王起初对班超礼节周到，后来忽然变得冷淡怠慢。班超对部下说：「你们觉不觉得鄯善王的礼数变薄了？这一定是匈奴的使者也来了，他心里犹豫，不知道该站在哪一边。」",
+ act2:"超乃会其吏士三十六人，曰：「不入虎穴，不得虎子。当今之计，独有因夜以火攻虏，使彼不知我多少，必大震怖，可殄尽也。」夜乃纵火，虏众惊乱，超手格杀三人，吏兵斩其使及从士三十余级。鄯善王震怖，遂纳子为质，一国服属。",
+ act2v:"班超召集部下三十六人，说：「不入虎穴，焉得虎子。眼下唯一的办法，是趁夜火攻匈奴使团，让他们摸不清我们有多少人，必然大乱，可以把他们全歼。」当夜放火，匈奴人大乱，班超亲手格杀三人，部下斩杀使者及随从三十多人。鄯善王震恐，送王子入汉朝为质，全国归附。",
+ note:"「不入虎穴，不得虎子。」—— 机会站在冒险一边，但冒险之前，班超早已看清了局势。",
+ hint:"思辨：班超的勇敢和鲁莽有什么区别？他动手之前，先做了什么判断？",
+ tags:["勇气","思辨"]},
+
+{id:"tiying", dept:"闺智部", level:"🌿 进阶", title:"缇萦上书救父",
+ act1:"太仓令淳于意有罪，当刑，诏狱逮系长安。意有五女，随而泣。意怒骂曰：「生子不生男，缓急无可使者！」",
+ act1v:"太仓令淳于意犯了罪，要受肉刑，被押往长安。他有五个女儿，跟在后面哭。淳于意怒骂道：「生孩子不生男孩，危急关头没有一个能顶用的！」",
+ act2:"少女缇萦伤父之言，随父至长安，上书曰：「妾父为吏，齐中皆称其廉平，今坐法当刑。妾伤夫死者不可复生，刑者不可复属，虽欲改过自新，其道无由也。妾愿入身为官婢，以赎父刑罪，使得改过自新。」书奏，天子怜悲其意，遂下令除肉刑。",
+ act2v:"小女儿缇萦为父亲的话感到难过，一路跟到长安，向汉文帝上书说：「我父亲做官，齐国人都称赞他廉洁公正，如今犯法当受肉刑。我痛心的是，人死了不能复生，受刑残缺的肢体不能再接上，即使想改过自新，也没有机会了。我愿意没入官府为奴婢，来赎父亲的刑罪，让他有机会改过自新。」奏书呈上，汉文帝怜悯她的心意，竟因此下令废除了肉刑。",
+ note:"「妾愿入身为官婢，以赎父刑罪。」—— 一个小女孩的一封信，改掉了整个国家的酷刑。声音小，不等于没有力量。",
+ hint:"新闻时事：缇萦改变了国家的法律。如果一个人觉得规则不公平，除了抱怨，还可以做什么？",
+ tags:["勇气","格局","思辨"]},
+
+{id:"tianji", dept:"术智部", level:"🌿 进阶", title:"田忌赛马",
+ act1:"齐使者如梁，孙膑以刑徒阴见，说齐使。齐使以为奇，窃载与之齐。齐将田忌善而客待之。忌数与齐诸公子驰逐重射，孙子见其马足不甚相远，马有上、中、下辈。",
+ act1v:"齐国使者到大梁，孙膑以刑徒的身份秘密求见，说服了齐使。齐使认为他是奇才，偷偷把他载回齐国。将军田忌赏识孙膑，以客礼相待。田忌常和齐国公子们赛马赌重金，孙膑观察到双方的马脚力相差不远，都可分为上、中、下三等。",
+ act2:"孙子谓田忌曰：「君弟重射，臣能令君胜。」及临质，孙子曰：「今以君之下驷与彼上驷，取君上驷与彼中驷，取君中驷与彼下驷。」既驰三辈毕，而田忌一不胜而再胜，卒得王千金。",
+ act2v:"孙膑对田忌说：「您尽管下大注，我能让你赢。」比赛时，孙膑说：「用您的下等马对他们的上等马，用上等马对他们的中等马，用中等马对他们的下等马。」三场比赛结束，田忌输一场、赢两场，最终赢了齐王的千金。",
+ note:"「一不胜而再胜。」—— 资源不变，换个排法，输局变赢局。",
+ hint:"学习：考试复习时间有限，「什么都平均用力」和「把力气花在最能提分的地方」，哪个更像孙膑的思路？",
+ tags:["智慧","思辨"]},
+
+{id:"ximenbao", dept:"术智部", level:"🌿 进阶", title:"西门豹治邺",
+ act1:"魏文侯时，西门豹为邺令。会长老，问之民所疾苦。长老曰：「苦为河伯娶妇，以故贫。」豹问其故，对曰：「邺三老、廷掾常岁赋敛百姓钱数百万，用其二三十万为河伯娶妇，与祝巫共分其余钱持归。」",
+ act1v:"魏文侯时，西门豹任邺县令。他召集长老，询问百姓疾苦。长老说：「最苦的是给河神娶媳妇，大家都因此贫困。」西门豹问缘由，回答说：「邺地的三老、廷掾每年向百姓收几百万钱，只用二三十万给河神办婚事，剩下的和巫婆一起分掉拿回家。」",
+ act2:"至为河伯娶妇时，豹往会之河上。曰：「是女子不好，烦大巫妪为入报河伯，得更求好女，后日送之。」即使吏卒共抱大巫妪投之河中。有顷，复投三老。长老、吏傍观者皆惊恐，叩头且破。豹曰：「巫妪、三老不来还，奈之何？」皆叩头曰：「不敢复言为河伯娶妇！」邺吏民大惊恐，从是以后，不敢复言为河伯娶妇。豹即发民凿十二渠，引河水灌民田，田皆溉。",
+ act2v:"到了给河神娶亲那天，西门豹到河边观看，说：「这个女子不漂亮，麻烦大巫婆下河去禀报河神，改天再找个漂亮的送去。」就叫差役把大巫婆扔进河里。过一会儿，又把三老扔下河。围观的长老、官吏全都吓得叩头，额头都磕破了。西门豹说：「巫婆、三老不回来复命，怎么办呢？」众人叩头说：「再也不敢提给河神娶媳妇了！」从此邺地再没人敢提此事。西门豹随即征发百姓开凿十二条水渠，引河水灌田，庄稼都得到了灌溉。",
+ note:"「以其人之道，还治其人之身。」—— 对付装神弄鬼的骗局，最好的办法是顺着他的逻辑，演给他看。",
+ hint:"思辨：巫婆说「不娶媳妇河神就发大水」。西门豹为什么不直接下令禁止，而要先「顺着演」？遇到谣言，揭穿和演示哪个更有力？",
+ tags:["思辨","求真","智慧"]},
+
+{id:"chulong", dept:"语智部", level:"🌳 挑战", title:"触龙说赵太后",
+ act1:"赵太后新用事，秦急攻之。赵氏求救于齐，齐曰：「必以长安君为质，兵乃出。」太后不肯，大臣强谏。太后明谓左右：「有复言令长安君为质者，老妇必唾其面！」",
+ act1v:"赵太后刚掌权，秦国猛攻赵国。赵国向齐国求救，齐国说：「一定要让长安君来做人质，我们才出兵。」太后不肯，大臣们极力劝谏。太后公开对左右说：「谁再敢说让长安君去做人质，我一定朝他脸上吐唾沫！」",
+ act2:"左师触龙入见，太后盛气而揖之。触龙谢病足，徐问太后身体、饮食，太后色少解。触龙为幼子求宫中卫士之职，太后笑曰：「丈夫亦爱怜其少子乎？」对曰：「甚于妇人。」因曰：「父母之爱子，则为之计深远。今媪尊长安君之位，而封之以膏腴之地，多予之重器，而不及今令有功于国；一旦山陵崩，长安君何以自托于赵？」太后曰：「诺，恣君之所使之。」于是为长安君约车百乘，质于齐，齐兵乃出。",
+ act2v:"左师触龙入宫求见，太后怒气冲冲地等着他。触龙先说脚有病，慢慢问候太后的身体、饮食，太后的脸色稍稍缓和。触龙又为自己的小儿子求一个宫中卫士的职位，太后笑了：「男人也这么疼爱小儿子吗？」触龙答：「比妇人还疼。」趁机说：「父母疼爱子女，就要为他们作长远的打算。如今您抬高长安君的地位，封给他肥沃的土地，赐给他贵重的宝器，却不趁现在让他为国家立功；一旦您百年之后，长安君凭什么在赵国立身？」太后说：「好，任凭你派他去吧。」于是为长安君备车百辆，到齐国做人质，齐国这才出兵。",
+ note:"「父母之爱子，则为之计深远。」—— 硬碰硬的劝谏只会碰壁，触龙先谈家常、再谈爱子，把「你不能」换成了「你也是」。",
+ hint:"家庭日常：你想说服爸爸妈妈一件事（比如买一个想要的东西），直接吵和触龙这种「先聊对方关心的」方式，哪个更可能成功？",
+ tags:["智慧","沉住气"]},
+
+{id:"maosui", dept:"语智部", level:"🌿 进阶", title:"毛遂自荐",
+ act1:"秦围邯郸，赵使平原君求救，合从于楚，约与门下食客二十人偕，得十九人，余无可取者。门下有毛遂者，前，自赞于平原君。平原君曰：「夫贤士之处世也，譬若锥之处囊中，其末立见。今先生处胜之门下三年于此矣，左右未有所称诵，胜未有所闻，是先生无所有也。」",
+ act1v:"秦军围困邯郸，赵王派平原君向楚国求救、缔结合纵盟约，平原君打算带二十名门客同行，挑到十九人，剩下一个挑不出合适的。门客中有个叫毛遂的，上前向平原君自我推荐。平原君说：「贤能的人活在世上，好比锥子放在口袋里，锥尖立刻就会露出来。如今先生在我门下三年了，左右没人称颂过你，我也没听说过你，可见先生没有什么本事。」",
+ act2:"毛遂曰：「臣乃今日请处囊中耳。使遂蚤得处囊中，乃颖脱而出，非特其末见而已。」平原君竟与毛遂偕。至楚，平原君与楚王言合从，日中不决。毛遂按剑历阶而上，曰：「从之利害，两言而决耳。今日出而言从，日中不决，何也？」楚王怒叱，毛遂按剑而前，陈赵楚唇齿之势、秦之可惧，楚王乃歃血定从。平原君曰：「胜不敢复相士。毛先生以三寸之舌，强于百万之师。」",
+ act2v:"毛遂说：「我不过是今天才请求放进口袋里罢了。要是早放我进去，我早就整个锋芒都露出来了，何止露个锥尖。」平原君最终带上了毛遂。到了楚国，平原君与楚王谈合纵，谈到中午还没结果。毛遂手按剑柄快步登上台阶，说：「合纵的利害，两句话就能说清。今天从日出谈到中午还不决断，为什么？」楚王怒喝，毛遂按剑上前，陈说赵楚唇齿相依的形势和秦国的可怕，楚王于是歃血为盟，定下合纵。平原君感叹：「我再不敢自诩会识人了。毛先生三寸之舌，强过百万大军。」",
+ note:"「臣乃今日请处囊中耳。」—— 有本事的人，也要敢于自己争取机会。等别人发现，不如自己开口。",
+ hint:"校园生活：班里选拔主持人或参加比赛，你希望老师点名，还是会像毛遂一样自己举手？「自荐」和「炫耀」的区别在哪里？",
+ tags:["勇气","格局"]},
+
+{id:"sunshuao", dept:"上智部", level:"🌱 入门", title:"孙叔敖埋蛇",
+ act1:"孙叔敖为婴儿之时，出游，见两头蛇，杀而埋之。归而泣。其母问其故。",
+ act1v:"孙叔敖小时候，出去玩，看见一条两头蛇，就把它杀死埋掉了。回家后哭了起来。母亲问他为什么。",
+ act2:"叔敖对曰：「闻见两头之蛇者死，向者吾见之，恐去母而死也。」其母曰：「蛇今安在？」曰：「恐他人又见，杀而埋之矣。」其母曰：「吾闻有阴德者天报以福，汝不死也。」及长，为楚令尹。",
+ act2v:"孙叔敖回答：「我听说看见两头蛇的人会死，刚才我看见了，恐怕要离开母亲死去了。」母亲问：「蛇现在在哪里？」他说：「我怕别人再看见它，已经把它杀死埋掉了。」母亲说：「我听说暗中积德的人，上天会赐福给他，你不会死的。」孙叔敖长大后，做了楚国的令尹。",
+ note:"「恐他人又见，杀而埋之。」—— 自己害怕的时候，还想着不让别人受害，这就是仁心。",
+ hint:"家庭日常：有没有一件「自己已经够难受了，但还能顺手为别人做点事」的小事，你这个星期可以做到？",
+ tags:["仁心","格局"]},
+
+{id:"guanbao", dept:"明智部", level:"🌿 进阶", title:"管鲍之交",
+ act1:"管仲曰：「吾始困时，尝与鲍叔贾，分财利多自与，鲍叔不以我为贪，知我贫也。吾尝为鲍叔谋事而更穷困，鲍叔不以我为愚，知时有利不利也。吾尝三仕三见逐于君，鲍叔不以我为不肖，知我不遭时也。吾尝三战三走，鲍叔不以我为怯，知我有老母也。」",
+ act1v:"管仲说：「我当初穷困时，曾和鲍叔一起做生意，分钱财时我多拿了一些，鲍叔不认为我贪心，知道我穷。我曾替鲍叔办事却办得更糟，鲍叔不认为我笨，知道时机有利有不利。我曾三次做官三次被国君赶走，鲍叔不认为我没本事，知道我没遇上好时运。我曾三次打仗三次逃跑，鲍叔不认为我胆小，知道我家里有老母亲。」",
+ act2:"「公子纠败，召忽死之，吾幽囚受辱，鲍叔不以我为无耻，知我不羞小节而耻功名不显于天下也。生我者父母，知我者鲍子也。」鲍叔既进管仲，以身下之。天下不多管仲之贤而多鲍叔能知人也。",
+ act2v:"「公子纠失败，召忽为他而死，我被囚禁受辱，鲍叔不认为我不知羞耻，知道我不以小节为羞，而以功名不能显扬于天下为耻。生我的是父母，懂我的是鲍叔啊。」鲍叔举荐管仲之后，甘心位居其下。天下人不称赞管仲的贤能，而称赞鲍叔能识人。",
+ note:"「生我者父母，知我者鲍子也。」—— 识人的最高境界，是别人看见你的失败，他看见你的处境。",
+ hint:"校园生活：好朋友做了一件「看起来很糟糕」的事，你会先问原因，还是先下结论？",
+ tags:["识人","诚信"]},
+
+{id:"tangju", dept:"胆智部", level:"🌿 进阶", title:"唐雎不辱使命",
+ act1:"秦王使人谓安陵君曰：「寡人欲以五百里之地易安陵，安陵君其许寡人！」安陵君曰：「大王加惠，以大易小，甚善；虽然，受地于先王，愿终守之，弗敢易！」秦王不说。安陵君因使唐雎使于秦。秦王怫然怒，谓唐雎曰：「公亦尝闻天子之怒乎？天子之怒，伏尸百万，流血千里。」",
+ act1v:"秦王派人对安陵君说：「我想用五百里的土地换安陵，安陵君可要答应我！」安陵君说：「大王施恩，以大换小，很好；虽然如此，我从先王手里继承了这块地，愿意一直守着，不敢交换！」秦王不高兴。安陵君于是派唐雎出使秦国。秦王勃然大怒，对唐雎说：「你听说过天子发怒吗？天子发怒，百万尸体倒下，血流千里。」",
+ act2:"唐雎对曰：「大王尝闻布衣之怒乎？夫专诸之刺王僚也，彗星袭月；聂政之刺韩傀也，白虹贯日；要离之刺庆忌也，仓鹰击于殿上。此三子者，皆布衣之士也，怀怒未发，休祲降于天，与臣而将四矣。若士必怒，伏尸二人，流血五步，天下缟素，今日是也。」挺剑而起。秦王色挠，长跪而谢之。",
+ act2v:"唐雎回答：「大王听说过平民发怒吗？专诸刺王僚，彗星的尾巴扫过月亮；聂政刺韩傀，白虹穿过太阳；要离刺庆忌，苍鹰扑到殿上。这三位都是平民中的勇士，心里的怒气未发，上天就降下征兆，现在加上我就是第四个了。勇士真发了怒，倒下的尸体只有两具，流血不过五步，天下人却要穿白戴孝——就在今天。」说完拔剑而起。秦王脸色变了，直身跪坐，向唐雎道歉。",
+ note:"「挺剑而起。」—— 面对强权的恐吓，唐雎没有求饶，而是把「谁的代价更大」算给对方看。",
+ hint:"思辨：别人用「你承担不起后果」吓唬你时，唐雎的应对是什么？这和逞强有什么不同？",
+ tags:["勇气","应变"]},
+
+{id:"xiangao", dept:"捷智部", level:"🌿 进阶", title:"弦高犒师",
+ act1:"秦穆公使孟明视、西乞术、白乙丙潜师袭郑。郑商人弦高将市于周，遇秦师于滑。",
+ act1v:"秦穆公派孟明视、西乞术、白乙丙率兵偷袭郑国。郑国商人弦高正要去周地做买卖，在滑国一带迎面遇上了秦军。",
+ act2:"弦高曰：「若遽驰告，则师至国无备。」乃矫郑君之命，以十二牛犒劳秦师，曰：「寡君闻吾子将步师出于敝邑，敢犒从者。」且使人遽告于郑。秦将帅相顾曰：「郑已知之矣，备必成，攻之不克，围之不继。」遂灭滑而还。郑伯以存国之功赏弦高，弦高辞曰：「诞而得赏，则郑国之政废矣。」遂去之。",
+ act2v:"弦高想：「如果赶回去报信，秦军到时郑国毫无防备。」于是假称奉郑君之命，用十二头牛犒劳秦军，说：「我们国君听说贵军要经过敝国，特派我来犒劳将士。」同时派人飞报郑国。秦军将领互相看了看说：「郑国已经知道了，必有防备，攻城攻不下，围困又缺后援。」于是灭了滑国就撤兵了。郑伯要奖赏弦高救国之功，弦高推辞说：「靠说谎而得赏，郑国的政事就败坏了。」便离开了郑国。",
+ note:"「矫命犒师，诡道救国；事成而辞赏。」—— 急中生智救了国家，却不愿让「说谎有功」成为榜样。急智与诚实，他都守住了。",
+ hint:"思辨：弦高救了国家靠的是「假装」——这个谎言该不该说？他后来为什么又拒绝领赏？",
+ tags:["应变","诚信","思辨"]},
+
+{id:"taokan", dept:"上智部", level:"🌱 入门", title:"陶侃运甓",
+ act1:"陶侃为广州刺史，在州无事，辄朝运百甓于斋外，暮运于斋内。人问其故。",
+ act1v:"陶侃任广州刺史时，州里太平无事，他就每天早晨把一百块砖搬到书房外面，傍晚又搬回书房里面。别人问他为什么这样做。",
+ act2:"答曰：「吾方致力中原，过尔优逸，恐不堪事。」其励志勤力，皆此类也。后卒为东晋名臣，立功中原。",
+ act2v:"陶侃回答：「我正立志收复中原，日子过得太安逸，恐怕将来担不起大事。」他磨砺意志、勤练不怠，都像这样。后来他果然成为东晋名臣，在中原立下大功。",
+ note:"「过尔优逸，恐不堪事。」—— 没有大事的时候，正是为大事做准备的时候。",
+ hint:"学习：放假在家「太舒服」的时候，陶侃会怎么想？你给自己的「一百块砖」可以是什么？",
+ tags:["沉住气","格局"]},
+
+{id:"laoma", dept:"察智部", level:"🌱 入门", title:"老马识途",
+ act1:"管仲、隰朋从桓公伐孤竹，春往冬反，迷惑失道。",
+ act1v:"管仲和隰朋跟随齐桓公征伐孤竹国，春天出发，冬天返回，在山里迷了路。",
+ act2:"管仲曰：「老马之智可用也。」乃放老马而随之，遂得道。行山中无水，隰朋曰：「蚁冬居山之阳，夏居山之阴，蚁壤一寸而仞有水。」乃掘地，遂得水。",
+ act2v:"管仲说：「老马的智慧可以利用。」于是放开几匹老马，队伍跟在后面，果然找到了路。行军山中没有水，隰朋说：「蚂蚁冬天住在山的南面，夏天住在北面，蚂蚁窝的土堆高一寸，下面八尺就有水。」于是掘地，果然找到了水。",
+ note:"「老马之智可用也。」—— 经验是一种活的地图。放下身段向「老马」和「蚂蚁」学习，不丢人。",
+ hint:"学习：遇到不会的题目，「问老师问同学」和「自己硬扛」，管仲会怎么选？为什么向有经验的人请教也是一种聪明？",
+ tags:["智慧","思辨"]},
+
+{id:"menghuo", dept:"兵智部", level:"🌿 进阶", title:"七擒孟获",
+ act1:"诸葛亮南征，首战即擒孟获。亮使观于营阵之间，问曰：「此军何如？」获对曰：「向者不知虚实，故败。今蒙赐观看，若只如此，即定易胜耳。」亮笑，纵使更战。",
+ act1v:"诸葛亮南征，第一战就活捉了孟获。诸葛亮带他在军营各处观看，问：「我这支军队怎么样？」孟获回答：「之前我不知道虚实，所以败了。今天承蒙让我看了，如果只是这样，我肯定很容易打赢。」诸葛亮笑了，放他回去再战。",
+ act2:"凡七纵而七擒之，亮犹遣获。获止不去，曰：「公，天威也，南人不复反矣。」遂至滇池，南中平，皆即其渠率而用之。或谏，亮曰：「若留外人，则当留兵，兵留则无所食，一不易也；加夷新伤破，父兄死丧，留外人而无兵者，必成祸患，二不易也；又夷累有废杀之罪，自嫌衅重，若留外人，终不相信，三不易也。今吾欲使不留兵，不运粮，而纲纪粗定，夷汉粗安故耳。」",
+ act2v:"一共七次放走又七次擒回，诸葛亮还要再放。孟获却不走了，说：「丞相天威，我们南人再也不反了。」大军到了滇池，南方平定，诸葛亮就让当地首领照旧管理本地。有人劝谏，诸葛亮说：「留外地人治理就要留兵，留兵就没有粮草，这是第一不行；夷人刚受战乱、父兄死伤，留外人而无兵保护，必成祸患，这是第二不行；夷人屡有冲突的旧账，疑虑很重，留了外人终究互不信任，这是第三不行。我要的是不留兵、不运粮，而法度初定、夷汉相安。」",
+ note:"「七纵七擒，攻心为上。」—— 征服一个人最难的不是赢他，而是让他心服。",
+ hint:"思辨：诸葛亮明明早就赢了，为什么还要放七次？「让人怕」和「让人服」，哪个更长久？",
+ tags:["格局","识人"]},
+
+{id:"wangmei", dept:"捷智部", level:"🌱 入门", title:"望梅止渴",
+ act1:"魏武行役，失汲道，军皆渴。",
+ act1v:"曹操率军行军，找不到取水的路，全军都渴得厉害。",
+ act2:"乃令曰：「前有大梅林，饶子，甘酸可以解渴。」士卒闻之，口皆出水，乘此得及前源。",
+ act2v:"曹操于是传令说：「前面有一大片梅林，梅子很多，又甜又酸，正好解渴。」士兵们听了，嘴里都流出口水，趁着这股劲儿赶到了前方的水源。",
+ note:"「士卒闻之，口皆出水。」—— 心里先到了梅林，腿就到了水源。希望本身就是一种力气。",
+ hint:"思辨：望梅止渴是「善意的谎言」吗？长跑或练琴坚持不下去时，你会给自己画一棵什么样的「梅林」？",
+ tags:["智慧","应变"]},
+
+{id:"youmeng", dept:"语智部", level:"🌿 进阶", title:"优孟衣冠",
+ act1:"楚相孙叔敖死，其子贫困负薪。优孟即为孙叔敖衣冠，抵掌谈语，岁余，像孙叔敖。楚王置酒，优孟前为寿，庄王大惊，以为孙叔敖复生也，欲以为相。",
+ act1v:"楚相孙叔敖死后，他的儿子穷得靠砍柴为生。优孟就穿戴起孙叔敖生前的衣帽，模仿他的言谈举止，练了一年多，活像孙叔敖。一次楚庄王设宴，优孟上前敬酒，庄王大吃一惊，以为孙叔敖复活了，想请他再做宰相。",
+ act2:"优孟曰：「请归与妇计之。」三日后来曰：「妇言慎无为，楚相不足为也。如孙叔敖之为楚相，尽忠为廉以治楚，楚王得以霸。今死，其子无立锥之地，贫困负薪以自饮食。必如孙叔敖，不如自杀。」庄王谢之，乃召孙叔敖子，封之寝丘四百户。",
+ act2v:"优孟说：「请让我回家和妻子商量一下。」三天后回来说：「我妻子说千万别当，楚相不值得做。像孙叔敖那样做楚相，尽忠廉洁治理楚国，楚王才得以称霸。如今他死了，他儿子却没有立锥之地，穷得砍柴为生。要是落得孙叔敖那样的下场，还不如自杀。」庄王听了惭愧认错，于是召来孙叔敖的儿子，把寝丘四百户封给了他。",
+ note:"「楚相不足为也。」—— 优孟没有讲一句大道理，只是「演」给楚王看：好人被遗忘，是最有力的劝谏。",
+ hint:"思辨：想提醒一个人做错了，「直接说」和「演给他看」哪个更有效？优孟的办法为什么能让楚王不生气？",
+ tags:["智慧","应变"]},
+
+{id:"chunyukun", dept:"语智部", level:"🌿 进阶", title:"淳于髡一鸣惊人",
+ act1:"齐威王之时喜隐，好为淫乐长夜之饮，沉湎不治，委政卿大夫。百官荒乱，诸侯并侵，国且危亡，左右莫敢谏。淳于髡说之以隐曰：「国中有大鸟，止王之庭，三年不蜚又不鸣，王知此鸟何也？」",
+ act1v:"齐威王在位时喜欢说隐语，又爱通宵饮酒作乐，沉迷不问政事，把国事都交给卿大夫。百官懈怠混乱，诸侯都来侵犯，国家眼看要亡，左右没人敢劝谏。淳于髡用隐语劝他说：「国中有一只大鸟，停在大王的庭院里，三年不飞也不叫，大王知道这是什么鸟吗？」",
+ act2:"王曰：「此鸟不飞则已，一飞冲天；不鸣则已，一鸣惊人。」于是乃朝诸县令长七十二人，赏一人，诛一人，奋兵而出。诸侯振惊，皆还齐侵地。威行三十六年。",
+ act2v:"威王说：「这只鸟不飞则已，一飞冲天；不鸣则已，一鸣惊人。」于是上朝召见七十二位县令县长，奖赏了一人，诛杀了一人，整军出战。诸侯大为震惊，纷纷把侵占的土地还给齐国。齐国的声威维持了三十六年。",
+ note:"「说之以隐。」—— 劝一个听不进话的人，先给他一个谜语，让他自己说出答案。自己说出的道理，才会真的照做。",
+ hint:"思辨：如果好朋友沉迷游戏成绩下滑，直接批评他会翻脸，你能像淳于髡一样，编一个「谜语」让他自己想明白吗？",
+ tags:["智慧","应变"]},
+
+{id:"zhaokuo", dept:"明智部", level:"🌳 挑战", title:"赵括纸上谈兵",
+ act1:"赵括自少时学兵法，言兵事，以天下莫能当。尝与其父奢言兵事，奢不能难，然不谓善。括母问奢其故，奢曰：「兵，死地也，而括易言之。使赵不将括即已，若必将之，破赵军者必括也。」及括将行，其母上书言于王曰：「括不可使将。」王不听。",
+ act1v:"赵括从小学习兵法，谈论起军事，认为天下没人辩得过他。他曾和父亲赵奢讨论兵法，赵奢辩不倒他，却不认为他真行。赵括的母亲问原因，赵奢说：「打仗是生死之地，赵括却把它说得太轻巧。赵国不让他做将军就罢了，如果一定让他做，毁掉赵军的一定是他。」到赵括要出征时，他母亲上书赵王说：「赵括不能当将军。」赵王不听。",
+ act2:"括至长平，悉更约束，易置军吏。秦将白起闻之，纵奇兵，佯败走，而绝其粮道，分断其军为二，士卒离心。四十余日，军饿，赵括出锐卒自搏战，秦军射杀赵括。括军败，数十万之众遂降秦，秦悉坑之。赵前后所亡凡四十五万。",
+ act2v:"赵括到了长平，把原有的规章制度全部改掉，撤换军官。秦将白起听说后，派出奇兵，假装败退，截断赵军粮道，把赵军分割成两段，士兵离心。四十多天后，赵军断粮，赵括亲自率精兵搏战，被秦军射死。赵军大败，几十万人投降秦国，全部被坑杀。赵国前后共损失四十五万人。",
+ note:"「兵，死地也，而括易言之。」—— 谈起来头头是道，不等于做得到。警惕那些把难事说得很容易的人，包括自己。",
+ hint:"思辨：背熟了游泳要领但没下过水的人，能算会游泳吗？学习里「听懂了」和「会做了」的区别是什么？",
+ tags:["思辨","求真"]},
+];
+const DEPTS = ["上智部","明智部","察智部","胆智部","术智部","捷智部","语智部","兵智部","闺智部","杂智部"];
+const MILESTONES = [10,30,60,100];
+const STAGE_SIZE = 8;
+/* ═══════════ 状态与存储 ═══════════ */
+const KEY = "zhinang-jingdu-v1";
+const SPIRAL = ["bingji","zhangju","simaguang","hanxin","guanzhong","banchao","wangrong","linxiangru","tianji","yanzi","caochong","zichan","wenyanbo","tiying","sunshuao","chulong","qixi","maosui","ximenbao","sunbin","guanbao","tangju","xiangao","taokan","laoma","menghuo","wangmei","youmeng","zhaokuo","chunyukun"];
+let state = load() || { plan: SPIRAL.slice(), records: {}, summaries: [] };
+/* 篇目扩充迁移：把新增篇目按螺旋顺序并入旧计划 */
+(function(){
+  let changed = false;
+  SPIRAL.forEach(id=>{ if(!state.plan.includes(id) && !state.records[id]){ state.plan.push(id); changed = true; } });
+  if(changed) save();
+})();
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function byId(id){ return STORIES.find(s=>s.id===id); }
+function status(id){ if(state.records[id]) return "done"; return state.plan.includes(id) ? "todo" : "pool"; }
+function doneCount(){ return Object.keys(state.records).length; }
+function nextStory(){ return state.plan.map(byId).find(s=>s && !state.records[s.id]) || null; }
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.style.display="block"; setTimeout(()=>t.style.display="none",2200); }
+function fmtDate(ts){ const d=new Date(ts); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
+
+/* ═══════════ 导航 ═══════════ */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById("page-"+b.dataset.page).classList.add("active");
+    if(b.dataset.page==="catalog") renderCatalog();
+    if(b.dataset.page==="cards") renderCards();
+    if(b.dataset.page==="summary") renderSummary();
+  };
+});
+
+/* ═══════════ 精读页 ═══════════ */
+let current = null, attitude = "";
+function renderReader(){
+  const box = document.getElementById("reader");
+  const s = nextStory();
+  renderProgress();
+  if(!s){
+    box.innerHTML = `<div style="text-align:center;padding:40px">
+      <div class="stamp" style="width:80px;height:80px;font-size:22px;margin:0 auto 16px">圆满</div>
+      <p style="font-size:18px;letter-spacing:3px;line-height:2">阅读计划中的篇目已全部读完！<br>去「书目总览」把更多篇目加入计划吧。</p></div>`;
+    return;
+  }
+  current = s; attitude = "";
+  box.innerHTML = `
+    <h2>${s.title} <span class="tag dept">${s.dept}</span> <span class="tag">${s.level}</span></h2>
+    <div id="act1">
+      <span class="label">第一幕 · 困局</span>
+      <div class="guten">${esc(s.act1)}</div>
+      <p class="vernacular">【白话】${esc(s.act1v)}</p>
+      <div class="curtain">
+        <div class="q">— 故事先讲到这里 —<br>换作是你，你会怎么做？</div>
+        <textarea id="fAnswer" placeholder="写下你的想法（可以口述，家长代录）……"></textarea>
+        <br><button class="btn" id="fReveal" disabled>揭晓古人的做法</button>
+        <div style="margin-top:10px"><button class="btn ghost" id="fUnlock">家长解锁（孩子卡住时用）</button></div>
+      </div>
+    </div>
+    <div id="act2" style="display:none">
+      <div class="vs">
+        <div class="mine"><h4>✒ 我的解法</h4><p id="fAnswerShow"></p></div>
+        <div class="his"><h4>📜 古人的解法</h4><p>${esc(s.act2v)}</p></div>
+      </div>
+      <span class="label red">第二幕 · 古人的解法（原文）</span>
+      <div class="guten">${esc(s.act2)}</div>
+      <span class="label gold">冯梦龙按语</span>
+      <p class="vernacular">${esc(s.note)}</p>
+      <span class="label">你的解法和古人比，哪个好？</span>
+      <div class="attitudes" id="fAttitudes">
+        <button data-v="佩服古人">🙇 佩服古人</button>
+        <button data-v="各有千秋">🤝 各有千秋</button>
+        <button data-v="我的更好">😎 我的更好</button>
+        <button data-v="不认同">🤔 不认同</button>
+      </div>
+      <span class="label">联系当下</span>
+      <div class="hint">💡 ${esc(s.hint)}</div>
+      <textarea id="fModern" placeholder="这件事让我想到……"></textarea>
+      <span class="label red">一句话心得</span>
+      <textarea id="fHeart" style="min-height:56px" placeholder="用一句话写下今天的收获，它会变成一张智慧卡片……"></textarea>
+      <span class="label">家长批注（可选）</span>
+      <textarea id="fParent" style="min-height:50px" placeholder="家长的补充或不同看法……"></textarea>
+      <div style="text-align:center"><button class="btn" id="fFinish">盖章收卷 · 存入卡片库</button></div>
+    </div>`;
+  const ans = document.getElementById("fAnswer");
+  ans.addEventListener("input",()=>{ document.getElementById("fReveal").disabled = ans.value.trim().length===0; });
+  const reveal = ()=>{
+    const mine = ans.value.trim() || "（家长解锁，孩子口述）";
+    document.getElementById("fAnswerShow").textContent = mine;
+    document.getElementById("act1").style.display="none";
+    document.getElementById("act2").style.display="block";
+    current._mine = mine;
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+  document.getElementById("fReveal").onclick = reveal;
+  document.getElementById("fUnlock").onclick = reveal;
+  document.querySelectorAll("#fAttitudes button").forEach(b=>{
+    b.onclick=()=>{ document.querySelectorAll("#fAttitudes button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); attitude=b.dataset.v; };
+  });
+  document.getElementById("fFinish").onclick = finishStory;
+}
+function finishStory(){
+  const heart = document.getElementById("fHeart").value.trim();
+  if(!heart){ toast("请写下「一句话心得」再收卷"); return; }
+  state.records[current.id] = {
+    answer: current._mine || "",
+    attitude: attitude || "（未选择）",
+    modern: document.getElementById("fModern").value.trim(),
+    heart, parentNote: document.getElementById("fParent").value.trim(),
+    tags: current.tags || [], finishedAt: Date.now()
+  };
+  save(); renderProgress();
+  const n = doneCount();
+  toast(`「${current.title}」已盖章收卷 ✓`);
+  if(n % STAGE_SIZE === 0) setTimeout(()=>toast("📖 已满 "+n+" 则，该做一次阶段总结啦！"), 2400);
+  current = null;
+  setTimeout(renderReader, 600);
+}
+function renderProgress(){
+  const n = doneCount();
+  document.getElementById("progressPill").innerHTML = `已读 <b>${n}</b> / ${STORIES.length} 则`;
+  document.getElementById("milestoneBar").innerHTML =
+    MILESTONES.map(m=>`<span class="milestone ${n>=m?"got":""}">${n>=m?"🏅":"○"} ${m} 则</span>`).join("");
+}
+
+/* ═══════════ 书目总览 ═══════════ */
+function renderCatalog(){
+  const wrap = document.getElementById("catalogList"); wrap.innerHTML = "";
+  DEPTS.forEach(d=>{
+    const list = STORIES.filter(s=>s.dept===d);
+    if(!list.length) return;
+    const done = list.filter(s=>state.records[s.id]).length;
+    const full = done===list.length && list.length>0;
+    const block = document.createElement("div"); block.className="dept-block";
+    block.innerHTML = `<div class="dept-head"><h3>${d}</h3><span class="cnt">${done} / ${list.length}</span>
+      <span class="stamp ${full?"":"locked"}">${full?d.slice(0,2):"未得"}</span></div>`;
+    const grid = document.createElement("div"); grid.className="story-grid";
+    list.forEach(s=>{
+      const st = status(s.id);
+      const it = document.createElement("div");
+      it.className = "story-item"+(st==="done"?" done":"");
+      const stText = {done:"✓ 已完成", todo:"● 在计划中", pool:"○ 未入选"}[st];
+      it.innerHTML = `<div class="t">${s.title}</div><div class="st ${st}">${stText} · ${s.level}</div>`;
+      it.onclick = ()=>{
+        if(st==="pool"){ state.plan.push(s.id); save(); renderCatalog(); renderProgress(); toast(`「${s.title}」已加入阅读计划`); }
+        else if(st==="todo"){ openStory(s.id); }
+        else showRecord(s.id);
+      };
+      grid.appendChild(it);
+    });
+    block.appendChild(grid); wrap.appendChild(block);
+  });
+}
+function openStory(id){
+  if(!state.plan.includes(id)){ state.plan.push(id); save(); }
+  /* 将此篇提为下一则：仅当它就是下一则时直接读，否则提示 */
+  const nxt = nextStory();
+  if(nxt && nxt.id!==id){
+    state.plan = [id, ...state.plan.filter(x=>x!==id)];
+    save();
+  }
+  document.querySelector('nav button[data-page="today"]').click();
+  renderReader();
+}
+
+/* ═══════════ 卡片库与记录详情 ═══════════ */
+function renderCards(){
+  const filter = document.getElementById("tagFilter").value;
+  const wall = document.getElementById("cardWall"); wall.innerHTML = "";
+  const recs = Object.keys(state.records).map(id=>({s:byId(id), r:state.records[id]}))
+    .filter(x=>x.s).sort((a,b)=>b.r.finishedAt-a.r.finishedAt)
+    .filter(x=>!filter || (x.r.tags||[]).includes(filter));
+  /* 标签下拉 */
+  const allTags = [...new Set(Object.values(state.records).flatMap(r=>r.tags||[]))];
+  const sel = document.getElementById("tagFilter");
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">全部标签</option>' + allTags.map(t=>`<option ${t===cur?"selected":""}>${t}</option>`).join("");
+  if(!recs.length){ wall.innerHTML = '<div class="empty">还没有心得卡片，去读今日故事吧</div>'; return; }
+  recs.forEach(({s,r})=>{
+    const c = document.createElement("div"); c.className="wis-card";
+    c.innerHTML = `<div class="from">${s.dept} · 《${s.title}》 · ${fmtDate(r.finishedAt)}</div>
+      <div class="heart">「${esc(r.heart)}」</div>
+      <div class="tags">${(r.tags||[]).map(t=>`<span>${t}</span>`).join("")}</div>`;
+    c.onclick = ()=>showRecord(s.id);
+    wall.appendChild(c);
+  });
+}
+document.getElementById("tagFilter").onchange = renderCards;
+function showRecord(id){
+  const s = byId(id), r = state.records[id];
+  if(!s || !r) return;
+  document.getElementById("modalBody").innerHTML = `
+    <h3>《${s.title}》精读档案</h3>
+    <p class="vernacular">${s.dept} · ${s.level} · ${fmtDate(r.finishedAt)}</p>
+    <div class="kv"><span class="k">我的解法</span><div class="v">${esc(r.answer)}</div></div>
+    <div class="kv"><span class="k">古人的解法</span><div class="v">${esc(s.act2v)}</div></div>
+    <div class="kv"><span class="k">我的评价</span><div class="v">${esc(r.attitude)}</div></div>
+    ${r.modern?`<div class="kv"><span class="k">联系当下</span><div class="v">${esc(r.modern)}</div></div>`:""}
+    <div class="kv"><span class="k">一句话心得</span><div class="v" style="font-size:17px">「${esc(r.heart)}」</div></div>
+    ${r.parentNote?`<div class="kv"><span class="k">家长批注</span><div class="v">${esc(r.parentNote)}</div></div>`:""}
+    <div style="text-align:center;margin-top:16px"><button class="btn ghost" onclick="lecture('${id}')">📢 开讲这一则</button></div>`;
+  document.getElementById("modal").classList.add("show");
+}
+document.getElementById("modalClose").onclick = ()=>document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").onclick = e=>{ if(e.target.id==="modal") e.target.classList.remove("show"); };
+
+/* 开讲模式 */
+function lecture(id){
+  const s = byId(id), r = state.records[id];
+  document.getElementById("modal").classList.remove("show");
+  document.getElementById("lectureTitle").textContent = "《"+s.title+"》";
+  document.getElementById("lectureContent").textContent = r.heart;
+  document.getElementById("lecture").classList.add("show");
+}
+document.getElementById("lectureBtn").onclick = ()=>{
+  const ids = Object.keys(state.records);
+  if(!ids.length){ toast("先完成一则精读再开讲"); return; }
+  lecture(ids.sort((a,b)=>state.records[b].finishedAt-state.records[a].finishedAt)[0]);
+};
+document.getElementById("lectureClose").onclick = ()=>document.getElementById("lecture").classList.remove("show");
+
+/* ═══════════ 阶段总结 ═══════════ */
+function renderSummary(){
+  const area = document.getElementById("summaryArea");
+  const n = doneCount();
+  const doneStages = state.summaries.length;
+  const eligible = n >= (doneStages+1)*STAGE_SIZE;
+  let html = `<div class="scroll-card"><h2>阶段总结 <span class="tag">每 ${STAGE_SIZE} 则一次</span></h2>
+    <p class="vernacular">已读 ${n} 则 · 已完成 ${doneStages} 次总结${eligible?' · <b style="color:var(--seal)">现在可以做第 '+(doneStages+1)+' 次总结了！</b>':` · 再读 ${(doneStages+1)*STAGE_SIZE-n} 则解锁下次总结`}</p>`;
+  if(eligible){
+    html += `
+      <div class="summary-q">Q1 · 这一阶段的故事里，你最佩服谁？为什么？</div>
+      <textarea id="sq1"></textarea>
+      <div class="summary-q">Q2 · 哪个古人的做法你不认同？如果是今天，会发生什么？</div>
+      <textarea id="sq2"></textarea>
+      <div class="summary-q">Q3 · 有没有哪个故事的办法，你最近真的用上了？</div>
+      <textarea id="sq3"></textarea>
+      <div style="text-align:center"><button class="btn" id="saveSummary">存卷归档</button></div>`;
+  }
+  html += `</div>`;
+  if(state.summaries.length){
+    html += `<h3 style="letter-spacing:4px;margin:22px 0 12px">历次总结存档</h3>`;
+    state.summaries.slice().reverse().forEach((sm,i)=>{
+      html += `<div class="archive-item"><div class="d">第 ${state.summaries.length-i} 次总结 · ${fmtDate(sm.date)} · 已读 ${sm.count} 则</div>
+        <div class="b">Q1：${esc(sm.q1)}\n\nQ2：${esc(sm.q2)}\n\nQ3：${esc(sm.q3)}</div></div>`;
+    });
+  }
+  area.innerHTML = html;
+  const btn = document.getElementById("saveSummary");
+  if(btn) btn.onclick = ()=>{
+    state.summaries.push({ date:Date.now(), count:doneCount(),
+      q1:document.getElementById("sq1").value.trim(),
+      q2:document.getElementById("sq2").value.trim(),
+      q3:document.getElementById("sq3").value.trim() });
+    save(); renderSummary(); toast("总结已归档 ✓");
+  };
+}
+
+/* ═══════════ 导出 / 导入 / 打印 ═══════════ */
+document.getElementById("exportBtn").onclick = ()=>{
+  const blob = new Blob([JSON.stringify({stories:STORIES, state}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "智囊精读备份-"+new Date().toISOString().slice(0,10)+".json";
+  a.click(); toast("备份已导出");
+};
+document.getElementById("importBtn").onclick = ()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{
+      const data = JSON.parse(rd.result);
+      if(data.state && data.state.records){ state = data.state; save(); location.reload(); }
+      else toast("备份文件格式不正确");
+    }catch(err){ toast("备份文件无法读取"); }
+  };
+  rd.readAsText(f);
+};
+document.getElementById("printBtn").onclick = ()=>{
+  renderCards(); renderSummary();
+  window.print();
+};
+
+/* ═══════════ 启动 ═══════════ */
+renderReader();
+const _p = new URLSearchParams(location.search).get("page");
+if(_p){ const _b = document.querySelector(`nav button[data-page="${_p}"]`); if(_b) _b.click(); }
+</script>
+</body>
+</html>
