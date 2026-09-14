@@ -1,2 +1,9 @@
 *.png
 !icons/*.png
+
+# 安卓打包包与签名密钥（敏感，绝不入库）
+apk-test/
+*.keystore
+signing-key-info.txt
+*.apk
+*.aab
