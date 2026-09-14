@@ -1653,5 +1653,19 @@ renderReader();
 const _p = new URLSearchParams(location.search).get("page");
 if(_p){ const _b = document.querySelector(`nav button[data-page="${_p}"]`); if(_b) _b.click(); }
 </script>
-</body>
+<script>
+(function(){
+  const out=['sw='+document.documentElement.scrollWidth+' vw='+document.documentElement.clientWidth];
+  const sels=['header','nav','main','#milestoneBar','.scroll-card','.curtain','textarea','.btn','.lecture','.modal','.toast','.progress-pill'];
+  for(const s of sels){
+    const el=document.querySelector(s); if(!el) continue;
+    const d=el.style.display; el.style.display='none';
+    out.push('hide '+s+' -> sw='+document.documentElement.scrollWidth);
+    el.style.display=d;
+  }
+  const d=document.createElement('pre'); d.id='probe';
+  d.textContent=out.join(String.fromCharCode(10));
+  document.body.appendChild(d);
+})();
+</script></body>
 </html>
