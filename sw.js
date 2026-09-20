@@ -1,5 +1,5 @@
 /* 智囊精读 · Service Worker：离线缓存（cache-first） */
-const CACHE = "zhinang-v1.4";
+const CACHE = "zhinang-v1.5";
 const ASSETS = [
   "./智囊精读App.html",
   "./manifest.json",

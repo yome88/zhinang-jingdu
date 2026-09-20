@@ -278,7 +278,7 @@ if ("serviceWorker" in navigator) {
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="footer-note">智囊精读 · v1.4 · 数据保存在本机浏览器</div>
+<div class="footer-note">智囊精读 · v1.5 · 数据保存在本机浏览器</div>
 
 <script>if(!localStorage.getItem('zhinang-jingdu-v1'))localStorage.setItem('zhinang-jingdu-v1','{"plan": ["bingji", "zhangju", "simaguang", "hanxin", "guanzhong", "banchao", "wangrong", "linxiangru", "tianji", "yanzi", "caochong", "zichan"], "records": {"bingji": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757000000000}, "zhangju": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757086400000}, "simaguang": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757172800000}, "hanxin": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757259200000}, "guanzhong": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757345600000}, "banchao": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757432000000}, "wangrong": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757518400000}, "linxiangru": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757604800000}, "tianji": {"answer": "我会先冷静下来想一想别的办法。", "attitude": "佩服古人", "modern": "想到班里同学争执时，可以先验证再说谁对。", "heart": "先观察，再判断，不急着下结论。", "parentNote": "今天讨论得很投入。", "tags": ["思辨", "智慧"], "finishedAt": 1757691200000}}, "summaries": [{"date": 1757600000000, "count": 8, "q1": "最佩服缇萦，她一个小女孩敢给皇帝写信。", "q2": "不太认同孙膑减灶，骗人总觉得不太好。", "q3": "王戎识李：同学发的「免费领皮肤」链接我没点。"}]}');</script></head>
 <script>
@@ -1677,42 +1677,67 @@ document.getElementById("printBtn").onclick = ()=>{
   window.print();
 };
 
-/* ═══════════ 家庭云同步（LeanCloud REST，免 SDK） ═══════════ */
-const SYNC_KEY = "zhinang-sync-config-v1";
+/* ═══════════ 家庭云同步（Gitee 私有仓库，免 SDK） ═══════════ */
+const SYNC_KEY = "zhinang-sync-config-v2";
 const DEVICE_ID = (()=>{ let d=localStorage.getItem("zhinang-device"); if(!d){ d="设备-"+Math.random().toString(36).slice(2,6); localStorage.setItem("zhinang-device", d); } return d; })();
 function syncCfg(){ try{ return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; }catch(e){ return {}; } }
 function saveSyncCfg(c){ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }
-function syncEnabled(){ const c=syncCfg(); return !!(c.enabled && c.appId && c.appKey && c.apiHost && c.code); }
-async function lcFetch(method, path, body){
+function syncEnabled(){ const c=syncCfg(); return !!(c.enabled && c.token && c.owner && c.repo); }
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = ""; const CHUNK = 0x8000;
+  for(let i=0;i<bytes.length;i+=CHUNK) bin += String.fromCharCode.apply(null, bytes.subarray(i,i+CHUNK));
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(String(b64).replace(/\s/g,""));
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+async function gtFetch(method, path, body){
   const c = syncCfg();
-  const host = (c.apiHost||"").replace(/\/+$/,"");
-  const res = await fetch(host + path, {
+  const sep = path.includes("?") ? "&" : "?";
+  const res = await fetch("https://gitee.com/api/v5" + path + (method==="GET" ? sep+"access_token="+encodeURIComponent(c.token) : ""), {
     method,
-    headers: { "X-LC-Id": c.appId, "X-LC-Key": c.appKey, "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined
+    headers: { "Content-Type": "application/json;charset=UTF-8" },
+    body: body ? JSON.stringify(Object.assign({access_token:c.token}, body)) : undefined
   });
+  if(res.status === 404) return null;
   if(!res.ok) throw new Error("云端返回 " + res.status);
   return res.json();
 }
-async function cloudFind(){
-  const c = syncCfg();
-  const where = encodeURIComponent(JSON.stringify({code:c.code}));
-  const r = await lcFetch("GET", "/1.1/classes/ZhinangSync?where=" + where + "&limit=1");
-  return (r.results && r.results[0]) || null;
-}
+const SYNC_FILE = "zhinang-sync.json";
 async function cloudPull(){
-  const obj = await cloudFind();
-  if(!obj) return null;
-  try{ return { objectId: obj.objectId, ts: obj.ts||0, state: JSON.parse(obj.data) }; }
+  const c = syncCfg();
+  const f = await gtFetch("GET", `/repos/${c.owner}/${c.repo}/contents/${SYNC_FILE}`);
+  if(!f || !f.content) return null;
+  try{ const d = JSON.parse(b64decode(f.content)); return { sha: f.sha, ts: d.ts||0, state: d.state }; }
   catch(e){ throw new Error("云端数据无法解析"); }
 }
 async function cloudPush(){
   const c = syncCfg();
-  const data = JSON.stringify(state), ts = Date.now();
-  const found = await cloudFind();
-  if(found) await lcFetch("PUT", "/1.1/classes/ZhinangSync/" + found.objectId, { data, ts, device: DEVICE_ID });
-  else await lcFetch("POST", "/1.1/classes/ZhinangSync", { code:c.code, data, ts, device: DEVICE_ID });
-  const cfg = syncCfg(); cfg.lastSync = ts; cfg.lastError = ""; saveSyncCfg(cfg);
+  const payload = { ts: Date.now(), device: DEVICE_ID, state };
+  const body = { content: b64encode(JSON.stringify(payload)), message: "智囊精读同步 " + new Date().toLocaleString() };
+  const f = await gtFetch("GET", `/repos/${c.owner}/${c.repo}/contents/${SYNC_FILE}`);
+  if(f && f.sha){ body.sha = f.sha; await gtFetch("PUT", `/repos/${c.owner}/${c.repo}/contents/${SYNC_FILE}`, body); }
+  else await gtFetch("POST", `/repos/${c.owner}/${c.repo}/contents/${SYNC_FILE}`, body);
+  const cfg = syncCfg(); cfg.lastSync = payload.ts; cfg.lastError = ""; saveSyncCfg(cfg);
+}
+/* 用令牌验证身份，必要时自动创建私有仓库 */
+async function cloudSetup(token, repo){
+  const tmp = syncCfg(); saveSyncCfg(Object.assign(tmp, {token, repo}));
+  const me = await gtFetch("GET", "/user");
+  if(!me || !me.login) throw new Error("令牌无效");
+  const c = syncCfg(); c.owner = me.login; saveSyncCfg(c);
+  const exist = await gtFetch("GET", `/repos/${me.login}/${repo}`);
+  if(!exist){
+    const res = await fetch("https://gitee.com/api/v5/user/repos", {
+      method:"POST", headers:{ "Content-Type":"application/json;charset=UTF-8" },
+      body: JSON.stringify({ access_token: token, name: repo, private: true, auto_init: true, description: "智囊精读·家庭同步数据（请勿删除）" })
+    });
+    if(!res.ok) throw new Error("创建私有仓库失败（" + res.status + "）");
+  }
 }
 let _pushTimer = null;
 function scheduleCloudPush(){
@@ -1758,42 +1783,40 @@ document.getElementById("syncBtn").onclick = ()=>{
        : (c.lastSync ? "✓ 已开启 · 上次同步 " + new Date(c.lastSync).toLocaleString() : "✓ 已开启 · 尚未同步过"));
   document.getElementById("modalBody").innerHTML = `
     <h3>☁️ 家庭云同步</h3>
-    <p class="vernacular">多台设备（电脑、平板、手机）输入同一组设置，即可共享阅读进度与孩子的心得。数据存在你自己的 LeanCloud 免费应用里，每保存一次自动同步。</p>
-    <div class="kv"><span class="k">第一步</span><div class="v">到 leancloud.cn 注册并创建一个应用（免费版足够），在「设置 → 应用凭证」里复制 AppID / AppKey，并按提示绑定 API 域名。</div></div>
-    <div class="kv"><span class="k">AppID</span><div class="v"><input type="text" id="lcAppId" placeholder="如 Sw1234567890abcdefgh" value="${esc(c.appId||"")}"></div></div>
-    <div class="kv"><span class="k">AppKey</span><div class="v"><input type="text" id="lcAppKey" placeholder="应用凭证里的 AppKey" value="${esc(c.appKey||"")}"></div></div>
-    <div class="kv"><span class="k">API 域名</span><div class="v"><input type="text" id="lcHost" placeholder="如 https://xxx.lc-cn-n1-shared.com" value="${esc(c.apiHost||"")}"></div></div>
-    <div class="kv"><span class="k">家庭口令</span><div class="v"><input type="text" id="lcCode" placeholder="自定一个暗号，如：智囊·我家2026" value="${esc(c.code||"")}"></div></div>
+    <p class="vernacular">多台设备（电脑、平板、手机）粘贴同一个 Gitee 私人令牌，即可共享阅读进度与孩子的心得。数据存在你自己 Gitee 账号下一个<strong>私有仓库</strong>里（别人看不到），每保存一次自动同步。</p>
+    <div class="kv"><span class="k">第一步</span><div class="v">到 gitee.com 注册 / 登录 → 右上角头像 →「设置」→ 左侧「私人令牌」→「生成新令牌」→ 勾选 <strong>projects</strong> 权限 → 复制令牌。</div></div>
+    <div class="kv"><span class="k">私人令牌</span><div class="v"><input type="text" id="gtToken" placeholder="粘贴 Gitee 私人令牌" value="${esc(c.token||"")}"></div></div>
+    <div class="kv"><span class="k">仓库名</span><div class="v"><input type="text" id="gtRepo" placeholder="默认 zhinang-sync-data，保持默认即可" value="${esc(c.repo||"zhinang-sync-data")}"></div></div>
     <p class="hint" id="syncStatus">${statusLine}</p>
+    <p class="hint">💡 其他设备打开本 App →「阶段总结 → ☁️ 家庭云同步」→ 粘贴同一个令牌 →「保存并开启同步」，即可读到相同进度。</p>
     <button class="btn" id="syncSave">保存并开启同步</button>
     <button class="btn ghost" id="syncNow">立即同步一次</button>
     ${c.enabled ? '<button class="btn ghost" id="syncOff">停止同步</button>' : ''}
   `;
   document.getElementById("modal").classList.add("show");
   document.getElementById("syncSave").onclick = async ()=>{
-    const cfg = {
-      appId: document.getElementById("lcAppId").value.trim(),
-      appKey: document.getElementById("lcAppKey").value.trim(),
-      apiHost: document.getElementById("lcHost").value.trim(),
-      code: document.getElementById("lcCode").value.trim(),
-      enabled: true
-    };
-    if(!cfg.appId || !cfg.appKey || !cfg.apiHost || !cfg.code){ toast("请把四项都填完整"); return; }
-    saveSyncCfg(cfg);
-    document.getElementById("syncStatus").textContent = "正在连接云端……";
+    const token = document.getElementById("gtToken").value.trim();
+    const repo = document.getElementById("gtRepo").value.trim() || "zhinang-sync-data";
+    if(!token){ toast("请先粘贴私人令牌"); return; }
+    document.getElementById("syncStatus").textContent = "正在验证令牌并连接云端……";
+    try{
+      await cloudSetup(token, repo);
+      const cfg = syncCfg(); cfg.enabled = true; saveSyncCfg(cfg);
+    }catch(e){
+      document.getElementById("syncStatus").textContent = "⚠️ 连接失败：" + e.message + "，请检查令牌是否勾选 projects 权限。";
+      return;
+    }
     const okSync = await cloudSyncNow(false);
     document.getElementById("syncStatus").textContent = okSync
-      ? "✓ 同步成功！其他设备填入同样四项即可共享。" 
-      : "⚠️ 连接失败：" + (syncCfg().lastError || "") + "，请核对 AppID / AppKey / API 域名。";
+      ? "✓ 同步成功！其他设备粘贴同一令牌即可共享。"
+      : "⚠️ 同步失败：" + (syncCfg().lastError || "");
     if(okSync) toast("云同步已开启 ✓");
   };
   document.getElementById("syncNow").onclick = async ()=>{
-    saveSyncCfg(Object.assign(syncCfg(), {
-      appId: document.getElementById("lcAppId").value.trim(),
-      appKey: document.getElementById("lcAppKey").value.trim(),
-      apiHost: document.getElementById("lcHost").value.trim(),
-      code: document.getElementById("lcCode").value.trim()
-    }));
+    const cfg = syncCfg();
+    cfg.token = document.getElementById("gtToken").value.trim();
+    cfg.repo = document.getElementById("gtRepo").value.trim() || "zhinang-sync-data";
+    saveSyncCfg(cfg);
     document.getElementById("syncStatus").textContent = "正在同步……";
     const okSync = await cloudSyncNow(true);
     if(okSync) document.getElementById("syncStatus").textContent = "✓ 上次同步 " + new Date().toLocaleString();
