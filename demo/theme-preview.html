@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阅读体验改进 · 两套方案预览</title>
+<style>
+  /* ======== 预览容器 ======== */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#e8e2d4;font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;padding:20px}
+  .plan{max-width:760px;margin:0 auto 40px;border-radius:8px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.18)}
+  .plan-banner{padding:14px 24px;font-size:15px;letter-spacing:2px;color:#fff}
+  .plan-a .plan-banner{background:#3d3428}
+  .plan-b .plan-banner{background:#2e4a3e}
+  .plan-banner small{opacity:.75;font-size:12px;margin-left:10px;letter-spacing:1px}
+
+  /* ======== 方案 A：墨卷加深（保留书卷风，全面提升对比度与字号） ======== */
+  .plan-a .stage{
+    --paper:#f5eedd; --paper2:#ece1c8; --ink:#1c1712; --ink2:#463d30;
+    --seal:#8c2f23; --gold:#8a6a35; --line:#c9b992;
+    background:var(--paper);padding:0 0 30px;
+  }
+  .plan-b .stage{
+    --paper:#fbf8f0; --paper2:#f3eee1; --ink:#211d18; --ink2:#4a443b;
+    --seal:#9c3527; --gold:#7d5f2e; --line:#d9d2c0;
+    background:var(--paper);padding:0 0 30px;
+  }
+
+  .stage header{
+    border-bottom:2px solid var(--ink);padding:16px 24px 12px;
+    display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    background:linear-gradient(to bottom, var(--paper2), var(--paper));
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .seal{
+    width:46px;height:46px;background:var(--seal);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;line-height:1.05;text-align:center;border-radius:6px;
+    writing-mode:vertical-rl;box-shadow:2px 2px 0 rgba(0,0,0,.18);transform:rotate(-2deg);
+  }
+  h1{font-size:27px;letter-spacing:8px}
+  .subtitle{font-size:13px;color:var(--ink2);letter-spacing:3px;margin-top:4px}
+  .progress-pill{font-size:14px;color:var(--ink2);border:1px solid var(--line);padding:6px 15px;border-radius:20px;background:#fff8}
+  .progress-pill b{color:var(--seal);font-size:18px}
+  .stage nav{display:flex;border-bottom:1px solid var(--line);background:var(--paper2);padding:0 24px;flex-wrap:wrap}
+  .stage nav span{font-size:17px;letter-spacing:3px;padding:11px 22px;color:var(--ink2);border-bottom:3px solid transparent}
+  .stage nav span.active{color:var(--seal);border-bottom-color:var(--seal);font-weight:700}
+  .stage main{padding:24px 20px 10px}
+
+  .scroll-card{
+    background:#fffdf6;border:1px solid var(--line);border-left:4px solid var(--gold);
+    box-shadow:0 2px 10px rgba(90,80,60,.10);padding:22px 26px;margin-bottom:18px;
+  }
+  .scroll-card h2{font-size:21px;letter-spacing:3px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tag{font-size:12px;letter-spacing:1px;padding:3px 10px;border-radius:3px;border:1px solid var(--gold);color:var(--gold);font-weight:700}
+  .tag.dept{border-color:var(--seal);color:var(--seal)}
+
+  /* —— 方案差异核心：正文可读性 —— */
+  .plan-a .guten{
+    font-size:21px;line-height:2.15;letter-spacing:2px;padding:16px 20px;
+    background:var(--paper);border:1px dashed var(--line);margin:12px 0;
+    color:var(--ink);font-weight:600;
+  }
+  .plan-a .vernacular{font-size:17.5px;line-height:1.95;color:var(--ink2);margin:10px 0 6px}
+  .plan-b .guten{
+    font-size:22px;line-height:2.3;letter-spacing:3px;padding:18px 22px;
+    background:var(--paper);border:1px dashed var(--line);margin:12px 0;
+    color:var(--ink);
+  }
+  .plan-b .vernacular{font-size:18px;line-height:2.1;color:var(--ink2);margin:10px 0 6px;letter-spacing:.5px}
+
+  .label{display:inline-block;font-size:13px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:3px 11px;border-radius:2px;margin:14px 0 4px}
+  .label.red{background:var(--seal)}
+  .curtain{text-align:center;padding:30px 20px;margin:18px 0;border:2px dashed var(--seal);background:#fdf6ee}
+  .plan-a .curtain .q{font-size:22px;color:var(--seal);letter-spacing:4px;line-height:2;font-weight:700}
+  .plan-b .curtain .q{font-size:23px;color:var(--seal);letter-spacing:5px;line-height:2.1}
+  .ta-demo{
+    width:100%;min-height:76px;font-family:inherit;font-size:17px;padding:12px 14px;
+    border:1px solid var(--line);background:#fff;line-height:1.8;color:var(--ink);
+  }
+  .btn{
+    font-family:inherit;font-size:17px;letter-spacing:4px;padding:11px 30px;
+    margin-top:14px;border:none;border-radius:4px;background:var(--seal);color:#fff;
+    box-shadow:2px 2px 0 rgba(0,0,0,.15);display:inline-block;
+  }
+  .btn.ghost{background:none;color:var(--ink2);border:1px solid var(--line);box-shadow:none;font-size:14px}
+  .hint{font-size:15.5px;color:var(--ink2);background:var(--paper);border-left:3px solid var(--gold);padding:11px 15px;margin:10px 0;line-height:1.85}
+  .diff-note{max-width:760px;margin:0 auto 40px;padding:0 4px}
+  .diff-note table{width:100%;border-collapse:collapse;background:#fffdf6;font-size:14px}
+  .diff-note th,.diff-note td{border:1px solid var(--line,#d8cdb4);padding:8px 12px;text-align:left;line-height:1.6}
+  .diff-note th{background:#efe7d5}
+  .current-ref{max-width:760px;margin:0 auto 40px}
+  .current-ref summary{cursor:pointer;font-size:14px;color:#5a5245;padding:8px}
+</style>
+</head>
+<body>
+
+<!-- ================= 方案 A ================= -->
+<div class="plan plan-a">
+  <div class="plan-banner">方案 A · 墨卷加深 <small>保留现有书卷气质，墨色加深、字号整体上调，改动最小</small></div>
+  <div class="stage">
+    <header>
+      <div class="brand">
+        <div class="seal">囊智</div>
+        <div><h1>智囊精读</h1><p class="subtitle">亲子共读 · 每日一则 · 先想后揭晓</p></div>
+      </div>
+      <div class="progress-pill">已读 <b>0</b> / 10 则</div>
+    </header>
+    <nav><span class="active">今日阅读</span><span>书目总览</span><span>智慧卡片</span><span>阶段总结</span></nav>
+    <main>
+      <div class="scroll-card">
+        <h2>丙吉问牛 <span class="tag dept">上智部</span> <span class="tag">🌱 入门</span></h2>
+        <span class="label red">第一幕 · 悬念</span>
+        <div class="guten">汉相丙吉出，逢群斗，死伤横道，吉过之不问。前行，逢人逐牛，牛喘吐舌。吉止驻，使骑吏问：「逐牛行几里矣？」</div>
+        <p class="vernacular">【白话】汉代丞相丙吉出行，路上遇到一群人斗殴，死伤的人横在路上，丙吉经过却不闻不问。再往前走，看见有人赶牛，牛喘着气吐着舌头。丙吉却停下车，派随从去问：「你赶着牛走了几里路了？」</p>
+      </div>
+      <div class="curtain">
+        <p class="q">—— 故事先讲到这里 ——<br>换作是你，你会怎么做？</p>
+        <div class="ta-demo">写下你的想法（可以口述，家长代录）……</div>
+        <span class="btn">揭晓古人的做法</span><br>
+        <span class="btn ghost">家长解锁（孩子卡住时用）</span>
+      </div>
+      <p class="hint">💡 陪读提示：先听孩子说完再给提示，没有标准答案，「为什么这样想」比「想什么」更重要。</p>
+    </main>
+  </div>
+</div>
+
+<!-- ================= 方案 B ================= -->
+<div class="plan plan-b">
+  <div class="plan-banner">方案 B · 清朗书房 <small>更亮的纸色、更大的字号、更宽的行距，长时间陪读更护眼</small></div>
+  <div class="stage">
+    <header>
+      <div class="brand">
+        <div class="seal">囊智</div>
+        <div><h1>智囊精读</h1><p class="subtitle">亲子共读 · 每日一则 · 先想后揭晓</p></div>
+      </div>
+      <div class="progress-pill">已读 <b>0</b> / 10 则</div>
+    </header>
+    <nav><span class="active">今日阅读</span><span>书目总览</span><span>智慧卡片</span><span>阶段总结</span></nav>
+    <main>
+      <div class="scroll-card">
+        <h2>丙吉问牛 <span class="tag dept">上智部</span> <span class="tag">🌱 入门</span></h2>
+        <span class="label red">第一幕 · 悬念</span>
+        <div class="guten">汉相丙吉出，逢群斗，死伤横道，吉过之不问。前行，逢人逐牛，牛喘吐舌。吉止驻，使骑吏问：「逐牛行几里矣？」</div>
+        <p class="vernacular">【白话】汉代丞相丙吉出行，路上遇到一群人斗殴，死伤的人横在路上，丙吉经过却不闻不问。再往前走，看见有人赶牛，牛喘着气吐着舌头。丙吉却停下车，派随从去问：「你赶着牛走了几里路了？」</p>
+      </div>
+      <div class="curtain">
+        <p class="q">—— 故事先讲到这里 ——<br>换作是你，你会怎么做？</p>
+        <div class="ta-demo">写下你的想法（可以口述，家长代录）……</div>
+        <span class="btn">揭晓古人的做法</span><br>
+        <span class="btn ghost">家长解锁（孩子卡住时用）</span>
+      </div>
+      <p class="hint">💡 陪读提示：先听孩子说完再给提示，没有标准答案，「为什么这样想」比「想什么」更重要。</p>
+    </main>
+  </div>
+</div>
+
+<!-- ================= 差异对照 ================= -->
+<div class="diff-note">
+  <table>
+    <tr><th style="width:16%">项目</th><th style="width:28%">现状</th><th style="width:28%">方案 A · 墨卷加深</th><th style="width:28%">方案 B · 清朗书房</th></tr>
+    <tr><td>正文墨色</td><td>#2b2620 / 次要 #5a5245</td><td>#1c1712 / 次要 #463d30（更深一档）</td><td>#211d18 / 次要 #4a443b</td></tr>
+    <tr><td>纸色</td><td>#f7f2e7（偏黄）</td><td>#f5eedd（略深，衬墨）</td><td>#fbf8f0（更亮更净）</td></tr>
+    <tr><td>古文</td><td>18px / 行距 2.1</td><td>21px / 行距 2.15 / 加粗</td><td>22px / 行距 2.3 / 字距加宽</td></tr>
+    <tr><td>白话</td><td>15px / 行距 1.9</td><td>17.5px / 行距 1.95</td><td>18px / 行距 2.1</td></tr>
+    <tr><td>金色点缀</td><td>#b08d57（浅，小字发虚）</td><td>#8a6a35（加深，小字加粗）</td><td>#7d5f2e（更深）</td></tr>
+    <tr><td>气质</td><td>—</td><td>书卷味最浓，改动最小</td><td>最清爽，久读最不累</td></tr>
+  </table>
+</div>
+
+</body>
+</html>
