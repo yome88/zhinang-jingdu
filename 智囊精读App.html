@@ -256,6 +256,7 @@ if ("serviceWorker" in navigator) {
     <div class="toolbar">
       <button class="btn ghost" id="exportBtn">⤓ 导出备份</button>
       <button class="btn ghost" id="importBtn">⤒ 导入恢复</button>
+      <button class="btn ghost" id="syncBtn">☁️ 家庭云同步</button>
       <button class="btn ghost" id="printBtn">🖨 打印成册</button>
       <input type="file" id="importFile" accept=".json" style="display:none">
     </div>
@@ -277,7 +278,7 @@ if ("serviceWorker" in navigator) {
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="footer-note">智囊精读 · v1.3 · 数据保存在本机浏览器</div>
+<div class="footer-note">智囊精读 · v1.4 · 数据保存在本机浏览器</div>
 
 <script>
 /* ═══════════ 篇目数据 · 十则精选（螺旋编排） ═══════════ */
@@ -1365,6 +1366,26 @@ const STORIES = [
 const DEPTS = ["上智部","明智部","察智部","胆智部","术智部","捷智部","语智部","兵智部","闺智部","杂智部"];
 const MILESTONES = [10,30,60,100];
 const STAGE_SIZE = 8;
+/* 多设备合并：每则记录取 finishedAt 较新者；阅读计划取并集并按 SPIRAL 螺旋序排列；阶段总结按日期+内容去重 */
+function mergeState(a, b){
+  const out = { plan: [], records: {}, summaries: [] };
+  const ra = (a && a.records) || {}, rb = (b && b.records) || {};
+  Object.keys(ra).concat(Object.keys(rb)).forEach(id=>{
+    const x = ra[id], y = rb[id];
+    if(x && y) out.records[id] = (y.finishedAt||0) > (x.finishedAt||0) ? y : x;
+    else out.records[id] = x || y;
+  });
+  const inPlan = new Set([...((a && a.plan) || []), ...((b && b.plan) || [])]);
+  const order = new Map(SPIRAL.map((id,i)=>[id,i]));
+  out.plan = [...inPlan]
+    .filter(id=>!out.records[id])
+    .sort((x,y)=>{ const ox = order.has(x)?order.get(x):1e6, oy = order.has(y)?order.get(y):1e6; return ox-oy; });
+  const seen = new Set();
+  [...((a && a.summaries) || []), ...((b && b.summaries) || [])]
+    .sort((x,y)=>(x.date||0)-(y.date||0))
+    .forEach(s=>{ const k = (s.date||0) + "|" + (s.q1||""); if(!seen.has(k)){ seen.add(k); out.summaries.push(s); } });
+  return out;
+}
 /* ═══════════ 状态与存储 ═══════════ */
 const KEY = "zhinang-jingdu-v1";
 const SPIRAL = ["bingji","zhangju","simaguang","hanxin","guanzhong","banchao","wangrong","linxiangru","tianji","yanzi","caochong","zichan","wenyanbo","tiying","sunshuao","chulong","qixi","maosui","ximenbao","sunbin","guanbao","tangju","xiangao","taokan","laoma","menghuo","wangmei","youmeng","zhaokuo","chunyukun","taizong","kongrong","sunliang","yangshi","guoziyi","zhugeke","yueyangzi","xiean","lihui","chenyuanfang","zongque","saiweng","ganluo","weijiujiuzhao","ximu","wuyan","tiandan","zhuzhiwu","ertao","fanli","taokanmu","baozheng","wangjian","beishui","dongfangshuo","xiaohe","wangxizhi","zhangshizhi","youzhan","fankuai","piaomu","yuxu","fengxuan","jingpo","caogefa","lichong","qibu","zhuzou","yishang","liangshang","zhaoyun","zhuangxin","fenshu","quji","jianshu","dengai","xuyunfu","sunwuming","yongchi","liguang","chenping","mengmu","mochong","yuefa","zhangyi","zhouyafu","zouji","mayuan","shuguang","xiedaoyun","sangumao","mianchi","qutu","huaibing","beijiu","xunguan","lisu","huashe","zhaojun","yuzhongwen","caocan","zhangliao","bianque","kuaidao","jiming","zhaoweihou","shuiyan","youmengma","jiadao","zhangchang","wentai","zhuhai","wenhou","xuruzi","fanhuang","caiwenji","muying","youzhanyou","jiaxu","ouyangye"];
@@ -1376,7 +1397,7 @@ let state = load() || { plan: SPIRAL.slice(), records: {}, summaries: [] };
   if(changed) save();
 })();
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
-function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); scheduleCloudPush(); }
 function byId(id){ return STORIES.find(s=>s.id===id); }
 function status(id){ if(state.records[id]) return "done"; return state.plan.includes(id) ? "todo" : "pool"; }
 function doneCount(){ return Object.keys(state.records).length; }
@@ -1638,21 +1659,157 @@ document.getElementById("importFile").onchange = e=>{
   rd.onload = ()=>{
     try{
       const data = JSON.parse(rd.result);
-      if(data.state && data.state.records){ state = data.state; save(); location.reload(); }
-      else toast("备份文件格式不正确");
+      if(!(data.state && data.state.records)){ toast("备份文件格式不正确"); return; }
+      const remote = data.state;
+      const rN = Object.keys(remote.records).length;
+      const newN = Object.keys(remote.records).filter(id=>!state.records[id]).length;
+      if(!confirm(`备份内含 ${rN} 则阅读记录（其中 ${newN} 则是本机没有的）、${(remote.summaries||[]).length} 次阶段总结。\n\n导入采用「逐则合并」：同一则取时间较新的版本，本机已有记录不会被旧数据覆盖。\n\n确定导入吗？`)) return;
+      state = mergeState(state, remote);
+      save(); location.reload();
     }catch(err){ toast("备份文件无法读取"); }
   };
   rd.readAsText(f);
+  e.target.value = "";
 };
 document.getElementById("printBtn").onclick = ()=>{
   renderCards(); renderSummary();
   window.print();
 };
 
+/* ═══════════ 家庭云同步（LeanCloud REST，免 SDK） ═══════════ */
+const SYNC_KEY = "zhinang-sync-config-v1";
+const DEVICE_ID = (()=>{ let d=localStorage.getItem("zhinang-device"); if(!d){ d="设备-"+Math.random().toString(36).slice(2,6); localStorage.setItem("zhinang-device", d); } return d; })();
+function syncCfg(){ try{ return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; }catch(e){ return {}; } }
+function saveSyncCfg(c){ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }
+function syncEnabled(){ const c=syncCfg(); return !!(c.enabled && c.appId && c.appKey && c.apiHost && c.code); }
+async function lcFetch(method, path, body){
+  const c = syncCfg();
+  const host = (c.apiHost||"").replace(/\/+$/,"");
+  const res = await fetch(host + path, {
+    method,
+    headers: { "X-LC-Id": c.appId, "X-LC-Key": c.appKey, "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok) throw new Error("云端返回 " + res.status);
+  return res.json();
+}
+async function cloudFind(){
+  const c = syncCfg();
+  const where = encodeURIComponent(JSON.stringify({code:c.code}));
+  const r = await lcFetch("GET", "/1.1/classes/ZhinangSync?where=" + where + "&limit=1");
+  return (r.results && r.results[0]) || null;
+}
+async function cloudPull(){
+  const obj = await cloudFind();
+  if(!obj) return null;
+  try{ return { objectId: obj.objectId, ts: obj.ts||0, state: JSON.parse(obj.data) }; }
+  catch(e){ throw new Error("云端数据无法解析"); }
+}
+async function cloudPush(){
+  const c = syncCfg();
+  const data = JSON.stringify(state), ts = Date.now();
+  const found = await cloudFind();
+  if(found) await lcFetch("PUT", "/1.1/classes/ZhinangSync/" + found.objectId, { data, ts, device: DEVICE_ID });
+  else await lcFetch("POST", "/1.1/classes/ZhinangSync", { code:c.code, data, ts, device: DEVICE_ID });
+  const cfg = syncCfg(); cfg.lastSync = ts; cfg.lastError = ""; saveSyncCfg(cfg);
+}
+let _pushTimer = null;
+function scheduleCloudPush(){
+  if(!syncEnabled()) return;
+  clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(async ()=>{
+    try{ await cloudPush(); }
+    catch(e){ const cfg=syncCfg(); cfg.lastError = e.message; saveSyncCfg(cfg); }
+  }, 1500);
+}
+function rerenderCurrent(){
+  renderReader();
+  const active = document.querySelector("nav button.active");
+  if(!active) return;
+  if(active.dataset.page==="catalog") renderCatalog();
+  if(active.dataset.page==="cards") renderCards();
+  if(active.dataset.page==="summary") renderSummary();
+}
+async function cloudSyncNow(manual){
+  if(!syncEnabled()){ if(manual) toast("请先完成云同步设置"); return false; }
+  try{
+    const remote = await cloudPull();
+    if(remote && remote.state && remote.state.records){
+      const before = JSON.stringify(state);
+      state = mergeState(state, remote.state);
+      if(JSON.stringify(state) !== before){ save(); rerenderCurrent(); }
+    }
+    clearTimeout(_pushTimer);
+    await cloudPush();
+    if(manual) toast("云同步完成 ✓");
+    return true;
+  }catch(e){
+    const cfg = syncCfg(); cfg.lastError = e.message; saveSyncCfg(cfg);
+    if(manual) toast("同步失败：" + e.message);
+    return false;
+  }
+}
+document.getElementById("syncBtn").onclick = ()=>{
+  const c = syncCfg();
+  const statusLine = !syncEnabled()
+    ? "未开启（不开启则数据只保存在本机浏览器）"
+    : (c.lastError ? "⚠️ 上次同步出错：" + esc(c.lastError)
+       : (c.lastSync ? "✓ 已开启 · 上次同步 " + new Date(c.lastSync).toLocaleString() : "✓ 已开启 · 尚未同步过"));
+  document.getElementById("modalBody").innerHTML = `
+    <h3>☁️ 家庭云同步</h3>
+    <p class="vernacular">多台设备（电脑、平板、手机）输入同一组设置，即可共享阅读进度与孩子的心得。数据存在你自己的 LeanCloud 免费应用里，每保存一次自动同步。</p>
+    <div class="kv"><span class="k">第一步</span><div class="v">到 leancloud.cn 注册并创建一个应用（免费版足够），在「设置 → 应用凭证」里复制 AppID / AppKey，并按提示绑定 API 域名。</div></div>
+    <div class="kv"><span class="k">AppID</span><div class="v"><input type="text" id="lcAppId" placeholder="如 Sw1234567890abcdefgh" value="${esc(c.appId||"")}"></div></div>
+    <div class="kv"><span class="k">AppKey</span><div class="v"><input type="text" id="lcAppKey" placeholder="应用凭证里的 AppKey" value="${esc(c.appKey||"")}"></div></div>
+    <div class="kv"><span class="k">API 域名</span><div class="v"><input type="text" id="lcHost" placeholder="如 https://xxx.lc-cn-n1-shared.com" value="${esc(c.apiHost||"")}"></div></div>
+    <div class="kv"><span class="k">家庭口令</span><div class="v"><input type="text" id="lcCode" placeholder="自定一个暗号，如：智囊·我家2026" value="${esc(c.code||"")}"></div></div>
+    <p class="hint" id="syncStatus">${statusLine}</p>
+    <button class="btn" id="syncSave">保存并开启同步</button>
+    <button class="btn ghost" id="syncNow">立即同步一次</button>
+    ${c.enabled ? '<button class="btn ghost" id="syncOff">停止同步</button>' : ''}
+  `;
+  document.getElementById("modal").classList.add("show");
+  document.getElementById("syncSave").onclick = async ()=>{
+    const cfg = {
+      appId: document.getElementById("lcAppId").value.trim(),
+      appKey: document.getElementById("lcAppKey").value.trim(),
+      apiHost: document.getElementById("lcHost").value.trim(),
+      code: document.getElementById("lcCode").value.trim(),
+      enabled: true
+    };
+    if(!cfg.appId || !cfg.appKey || !cfg.apiHost || !cfg.code){ toast("请把四项都填完整"); return; }
+    saveSyncCfg(cfg);
+    document.getElementById("syncStatus").textContent = "正在连接云端……";
+    const okSync = await cloudSyncNow(false);
+    document.getElementById("syncStatus").textContent = okSync
+      ? "✓ 同步成功！其他设备填入同样四项即可共享。" 
+      : "⚠️ 连接失败：" + (syncCfg().lastError || "") + "，请核对 AppID / AppKey / API 域名。";
+    if(okSync) toast("云同步已开启 ✓");
+  };
+  document.getElementById("syncNow").onclick = async ()=>{
+    saveSyncCfg(Object.assign(syncCfg(), {
+      appId: document.getElementById("lcAppId").value.trim(),
+      appKey: document.getElementById("lcAppKey").value.trim(),
+      apiHost: document.getElementById("lcHost").value.trim(),
+      code: document.getElementById("lcCode").value.trim()
+    }));
+    document.getElementById("syncStatus").textContent = "正在同步……";
+    const okSync = await cloudSyncNow(true);
+    if(okSync) document.getElementById("syncStatus").textContent = "✓ 上次同步 " + new Date().toLocaleString();
+  };
+  const off = document.getElementById("syncOff");
+  if(off) off.onclick = ()=>{
+    const cfg = syncCfg(); cfg.enabled = false; saveSyncCfg(cfg);
+    document.getElementById("modal").classList.remove("show");
+    toast("已停止云同步（本机数据保留）");
+  };
+};
+
 /* ═══════════ 启动 ═══════════ */
 renderReader();
 const _p = new URLSearchParams(location.search).get("page");
 if(_p){ const _b = document.querySelector(`nav button[data-page="${_p}"]`); if(_b) _b.click(); }
+if(syncEnabled()) cloudSyncNow(false);
 </script>
 </body>
 </html>

@@ -71,5 +71,22 @@ ok(!first3.some(l=>l.includes("🌳")), "前三则不含挑战级");
 console.log("\n【5】阶段总结配置");
 ok(STAGE_SIZE === 8, "每 8 则一次阶段总结");
 
+console.log("\n【6】多设备合并 mergeState");
+const mg = sandbox.mergeState;
+ok(typeof mg === "function", "mergeState 已定义");
+if(typeof mg === "function"){
+  const A = { plan:["bingji","zhangju"], records:{ bingji:{heart:"旧",finishedAt:100}, simaguang:{heart:"仅A",finishedAt:50} }, summaries:[{date:1,q1:"s1"}] };
+  const B = { plan:["zhangju","hanxin"], records:{ bingji:{heart:"新",finishedAt:200}, guanzhong:{heart:"仅B",finishedAt:60} }, summaries:[{date:1,q1:"s1"},{date:2,q1:"s2"}] };
+  const M = mg(A, B);
+  ok(M.records.bingji.heart === "新", "同一则取 finishedAt 较新的记录");
+  ok(M.records.simaguang.heart === "仅A" && M.records.guanzhong.heart === "仅B", "单边记录都保留");
+  ok(!M.plan.includes("bingji") && !M.plan.includes("simaguang") && !M.plan.includes("guanzhong"), "已完成篇目自动移出计划");
+  ok(M.plan.includes("zhangju") && M.plan.includes("hanxin"), "未读篇目计划取并集");
+  ok(M.summaries.length === 2 && M.summaries[0].date === 1, "阶段总结按日期去重合并");
+  ok(JSON.stringify(mg(M, B)) === JSON.stringify(M), "合并幂等：重复同步不产生变化");
+  const empty = mg(null, null);
+  ok(Array.isArray(empty.plan) && Object.keys(empty.records).length === 0, "空输入容错");
+}
+
 console.log(`\n═══ 结果: ${pass} 通过 / ${fail} 失败 ═══`);
 process.exit(fail ? 1 : 0);
