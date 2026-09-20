@@ -6,7 +6,7 @@
 <title>智囊精读 · 亲子共读</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#a63a2b">
+<meta name="theme-color" content="#8c2f23">
 <meta name="description" content="亲子共读《智囊》——每日一则，先想后揭晓。">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,16 +20,16 @@ if ("serviceWorker" in navigator) {
 </script>
 <style>
   :root{
-    --paper:#f7f2e7; --paper2:#efe7d5; --ink:#2b2620; --ink2:#5a5245;
-    --seal:#a63a2b; --seal2:#8c2f23; --gold:#b08d57; --line:#d8cdb4;
+    --paper:#f5eedd; --paper2:#ece1c8; --ink:#1c1712; --ink2:#463d30;
+    --seal:#8c2f23; --seal2:#752619; --gold:#8a6a35; --line:#c9b992;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{overflow-x:hidden}
   body{
     background:var(--paper);
     background-image:
-      radial-gradient(ellipse at 20% 10%, rgba(176,141,87,.06), transparent 50%),
-      radial-gradient(ellipse at 80% 90%, rgba(166,58,43,.04), transparent 50%);
+      radial-gradient(ellipse at 20% 10%, rgba(138,106,53,.07), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(140,47,35,.05), transparent 50%);
     color:var(--ink);
     font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
     min-height:100vh;
@@ -48,7 +48,7 @@ if ("serviceWorker" in navigator) {
     writing-mode:vertical-rl;box-shadow:2px 2px 0 rgba(0,0,0,.15);transform:rotate(-2deg);
   }
   h1{font-size:30px;letter-spacing:10px}
-  .subtitle{font-size:12px;color:var(--ink2);letter-spacing:4px;margin-top:4px}
+  .subtitle{font-size:13px;color:var(--ink2);letter-spacing:4px;margin-top:4px}
   .progress-pill{
     font-size:14px;color:var(--ink2);border:1px solid var(--line);
     padding:6px 16px;border-radius:20px;background:#fff8
@@ -56,7 +56,7 @@ if ("serviceWorker" in navigator) {
   .progress-pill b{color:var(--seal);font-size:18px}
   nav{display:flex;border-bottom:1px solid var(--line);background:var(--paper2);padding:0 28px;flex-wrap:wrap}
   nav button{
-    font-family:inherit;font-size:16px;letter-spacing:4px;padding:12px 26px;
+    font-family:inherit;font-size:17px;letter-spacing:4px;padding:12px 26px;
     background:none;border:none;cursor:pointer;color:var(--ink2);border-bottom:3px solid transparent;
   }
   nav button.active{color:var(--seal);border-bottom-color:var(--seal);font-weight:700}
@@ -70,43 +70,44 @@ if ("serviceWorker" in navigator) {
     box-shadow:0 2px 10px rgba(90,80,60,.10);padding:24px 28px;margin-bottom:20px;
   }
   .scroll-card h2{font-size:20px;letter-spacing:3px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .tag{font-size:11px;letter-spacing:1px;padding:2px 9px;border-radius:3px;border:1px solid var(--gold);color:var(--gold)}
+  .tag{font-size:12px;letter-spacing:1px;padding:3px 10px;border-radius:3px;border:1px solid var(--gold);color:var(--gold);font-weight:700}
   .tag.dept{border-color:var(--seal);color:var(--seal)}
   .guten{
-    font-size:18px;line-height:2.1;letter-spacing:2px;padding:14px 18px;
-    background:var(--paper);border:1px dashed var(--line);margin:10px 0;
+    font-size:21px;line-height:2.15;letter-spacing:2px;padding:16px 20px;
+    background:var(--paper);border:1px dashed var(--line);margin:12px 0;
+    color:var(--ink);font-weight:600;
   }
-  .vernacular{font-size:15px;line-height:1.9;color:var(--ink2);margin:8px 0 4px}
-  .label{display:inline-block;font-size:12px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:2px 10px;border-radius:2px;margin:14px 0 4px}
+  .vernacular{font-size:17.5px;line-height:1.95;color:var(--ink2);margin:10px 0 6px}
+  .label{display:inline-block;font-size:13px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:3px 11px;border-radius:2px;margin:14px 0 4px}
   .label.red{background:var(--seal)} .label.gold{background:var(--gold)}
   .curtain{text-align:center;padding:34px 20px;margin:18px 0;border:2px dashed var(--seal);background:#fdf6ee}
-  .curtain .q{font-size:20px;color:var(--seal);letter-spacing:4px;margin-bottom:16px;line-height:2}
+  .curtain .q{font-size:22px;color:var(--seal);letter-spacing:4px;margin-bottom:16px;line-height:2;font-weight:700}
   textarea{
-    width:100%;min-height:80px;font-family:inherit;font-size:16px;padding:12px 14px;
+    width:100%;min-height:80px;font-family:inherit;font-size:17px;padding:12px 14px;
     border:1px solid var(--line);background:#fff;resize:vertical;line-height:1.8;
   }
   textarea:focus{outline:2px solid var(--gold)}
   input[type=text]{
-    width:100%;font-family:inherit;font-size:15px;padding:9px 12px;
+    width:100%;font-family:inherit;font-size:16px;padding:9px 12px;
     border:1px solid var(--line);background:#fff;
   }
   .btn{
-    font-family:inherit;font-size:16px;letter-spacing:4px;cursor:pointer;padding:10px 30px;
+    font-family:inherit;font-size:17px;letter-spacing:4px;cursor:pointer;padding:11px 30px;
     margin-top:14px;border:none;border-radius:4px;background:var(--seal);color:#fff;
     box-shadow:2px 2px 0 rgba(0,0,0,.15);transition:transform .1s;
   }
   .btn:hover{transform:translateY(-1px);background:var(--seal2)}
-  .btn.ghost{background:none;color:var(--ink2);border:1px solid var(--line);box-shadow:none;font-size:13px}
+  .btn.ghost{background:none;color:var(--ink2);border:1px solid var(--line);box-shadow:none;font-size:14px}
   .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
   .vs{display:flex;gap:16px;margin:14px 0;flex-wrap:wrap}
   .vs>div{flex:1;min-width:260px;padding:16px;border:1px solid var(--line);background:#fff}
   .vs .mine{border-top:3px solid var(--gold)} .vs .his{border-top:3px solid var(--seal)}
   .vs h4{font-size:14px;letter-spacing:3px;margin-bottom:8px;color:var(--ink2)}
-  .vs p{font-size:15px;line-height:1.8}
+  .vs p{font-size:16px;line-height:1.8}
   .attitudes{display:flex;gap:12px;margin:10px 0;flex-wrap:wrap}
-  .attitudes button{font-family:inherit;font-size:16px;padding:8px 20px;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:20px}
+  .attitudes button{font-family:inherit;font-size:17px;padding:8px 20px;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:20px}
   .attitudes button.on{background:var(--seal);color:#fff;border-color:var(--seal)}
-  .hint{font-size:14px;color:var(--ink2);background:var(--paper);border-left:3px solid var(--gold);padding:10px 14px;margin:8px 0;line-height:1.8}
+  .hint{font-size:15.5px;color:var(--ink2);background:var(--paper);border-left:3px solid var(--gold);padding:11px 15px;margin:8px 0;line-height:1.85}
   /* 书目 */
   .dept-block{margin-bottom:26px}
   .dept-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -117,25 +118,25 @@ if ("serviceWorker" in navigator) {
     border:2px solid var(--seal);border-radius:4px;color:var(--seal);font-size:13px;
     transform:rotate(-4deg);opacity:.9;margin-left:auto;
   }
-  .stamp.locked{border-color:var(--line);color:#c5b99e}
+  .stamp.locked{border-color:var(--line);color:#ab9d7d}
   .story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
   .story-item{background:#fffdf6;border:1px solid var(--line);padding:12px 14px;cursor:pointer;position:relative;transition:box-shadow .15s}
   .story-item:hover{box-shadow:0 2px 8px rgba(90,80,60,.18)}
-  .story-item .t{font-size:16px;letter-spacing:2px}
-  .story-item .st{font-size:12px;margin-top:6px;letter-spacing:1px}
-  .st.done{color:var(--seal)} .st.todo{color:var(--gold)} .st.pool{color:#b7ab8f}
+  .story-item .t{font-size:17px;letter-spacing:2px}
+  .story-item .st{font-size:13px;margin-top:6px;letter-spacing:1px}
+  .st.done{color:var(--seal)} .st.todo{color:var(--gold)} .st.pool{color:#9a8c6d}
   .story-item.done::after{
     content:"已读";position:absolute;right:8px;top:8px;color:var(--seal);
-    border:1.5px solid var(--seal);border-radius:3px;font-size:11px;padding:1px 5px;transform:rotate(-8deg);opacity:.85;
+    border:1.5px solid var(--seal);border-radius:3px;font-size:12px;padding:1px 5px;transform:rotate(-8deg);opacity:.85;
   }
   /* 卡片墙 */
   .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
   .wis-card{background:#fffdf6;border:1px solid var(--line);padding:18px;border-top:4px solid var(--seal);box-shadow:0 2px 8px rgba(90,80,60,.10);cursor:pointer}
-  .wis-card .from{font-size:12px;color:var(--ink2);letter-spacing:2px;margin-bottom:8px}
-  .wis-card .heart{font-size:17px;line-height:1.9;letter-spacing:1px}
+  .wis-card .from{font-size:13px;color:var(--ink2);letter-spacing:2px;margin-bottom:8px}
+  .wis-card .heart{font-size:18px;line-height:1.9;letter-spacing:1px}
   .wis-card .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
-  .wis-card .tags span{font-size:11px;background:var(--paper);border:1px solid var(--line);padding:2px 8px;border-radius:10px;color:var(--ink2)}
-  .empty{padding:40px;text-align:center;color:var(--ink2);font-size:15px;letter-spacing:2px;border:1px dashed var(--line)}
+  .wis-card .tags span{font-size:12px;background:var(--paper);border:1px solid var(--line);padding:2px 8px;border-radius:10px;color:var(--ink2)}
+  .empty{padding:40px;text-align:center;color:var(--ink2);font-size:16px;letter-spacing:2px;border:1px dashed var(--line)}
   /* 详情弹层 */
   .modal{position:fixed;inset:0;background:rgba(43,38,32,.45);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
   .modal.show{display:flex}
@@ -143,8 +144,8 @@ if ("serviceWorker" in navigator) {
   .modal-box h3{font-size:20px;letter-spacing:3px;margin-bottom:6px}
   .modal-box .close-x{position:absolute;top:12px;right:16px;font-size:18px;background:none;border:none;cursor:pointer;color:var(--ink2);font-family:inherit}
   .kv{margin:12px 0}
-  .kv .k{font-size:12px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:2px 10px;border-radius:2px;display:inline-block;margin-bottom:4px}
-  .kv .v{font-size:15px;line-height:1.9;padding:6px 2px}
+  .kv .k{font-size:13px;letter-spacing:3px;color:#fff;background:var(--ink2);padding:2px 10px;border-radius:2px;display:inline-block;margin-bottom:4px}
+  .kv .v{font-size:16px;line-height:1.9;padding:6px 2px}
   /* 开讲模式 */
   .lecture{position:fixed;inset:0;background:var(--paper);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
   .lecture.show{display:flex}
@@ -152,56 +153,56 @@ if ("serviceWorker" in navigator) {
   .lecture .lc{font-size:26px;line-height:2.2;letter-spacing:3px;max-width:720px;text-align:center}
   .lecture .close{position:absolute;top:24px;right:30px;font-size:15px}
   /* 总结 */
-  .summary-q{font-size:16px;line-height:2;padding:10px 0 10px 18px;border-left:3px solid var(--seal);margin:10px 0;background:#fffdf6}
+  .summary-q{font-size:17px;line-height:2;padding:10px 0 10px 18px;border-left:3px solid var(--seal);margin:10px 0;background:#fffdf6}
   .archive-item{border:1px solid var(--line);background:#fffdf6;padding:16px 20px;margin-bottom:14px}
-  .archive-item .d{font-size:12px;color:var(--ink2);letter-spacing:2px;margin-bottom:6px}
-  .archive-item .b{font-size:15px;line-height:1.9;white-space:pre-wrap}
+  .archive-item .d{font-size:13px;color:var(--ink2);letter-spacing:2px;margin-bottom:6px}
+  .archive-item .b{font-size:16px;line-height:1.9;white-space:pre-wrap}
   .toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap}
-  .milestone{display:inline-block;margin:4px 8px 0 0;padding:4px 12px;border:1px solid var(--line);border-radius:16px;font-size:13px;color:#b7ab8f}
+  .milestone{display:inline-block;margin:4px 8px 0 0;padding:4px 12px;border:1px solid var(--line);border-radius:16px;font-size:14px;color:#9a8c6d}
   .milestone.got{border-color:var(--seal);color:var(--seal);background:#fdf6ee}
-  .footer-note{text-align:center;font-size:12px;color:#b7ab8f;letter-spacing:3px;margin-top:50px;padding-bottom:30px}
+  .footer-note{text-align:center;font-size:13px;color:#9a8c6d;letter-spacing:3px;margin-top:50px;padding-bottom:30px}
   .toast{
     position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
     background:var(--ink);color:var(--paper);padding:10px 26px;border-radius:4px;
-    font-size:14px;letter-spacing:3px;display:none;z-index:99;
+    font-size:15px;letter-spacing:3px;display:none;z-index:99;
   }
   /* ── 移动端专项优化（≤640px） ── */
   @media (max-width:640px){
-    body{font-size:15px}
+    body{font-size:16px}
     header{padding:12px 14px 10px;align-items:center}
     .seal{width:40px;height:40px;font-size:16px}
     h1{font-size:22px;letter-spacing:5px}
-    .subtitle{font-size:11px;letter-spacing:2px}
-    .progress-pill{font-size:12px;padding:5px 12px}
-    .progress-pill b{font-size:15px}
+    .subtitle{font-size:12px;letter-spacing:2px}
+    .progress-pill{font-size:13px;padding:5px 12px}
+    .progress-pill b{font-size:16px}
     nav{padding:0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-    nav button{font-size:14px;letter-spacing:2px;padding:10px 14px;white-space:nowrap;flex:1;min-width:76px;min-height:44px}
+    nav button{font-size:15px;letter-spacing:2px;padding:10px 14px;white-space:nowrap;flex:1;min-width:76px;min-height:44px}
     main{padding:16px 12px 60px}
     .scroll-card{padding:16px 14px}
-    .scroll-card h2{font-size:18px;letter-spacing:2px}
-    .guten{font-size:16px;line-height:1.9;letter-spacing:1px;padding:12px 12px}
-    .vernacular{font-size:14px}
+    .scroll-card h2{font-size:19px;letter-spacing:2px}
+    .guten{font-size:19px;line-height:2;letter-spacing:1px;padding:13px 13px}
+    .vernacular{font-size:16px}
     .curtain{padding:24px 12px}
-    .curtain .q{font-size:17px;letter-spacing:2px}
+    .curtain .q{font-size:19px;letter-spacing:2px}
     textarea{font-size:16px;min-height:88px}
-    .btn{width:100%;font-size:16px;padding:13px 20px;min-height:48px;letter-spacing:3px}
+    .btn{width:100%;font-size:17px;padding:13px 20px;min-height:48px;letter-spacing:3px}
     .btn.ghost{width:auto;padding:8px 16px;min-height:40px}
     .vs{flex-direction:column}
     .vs>div{min-width:0}
     .attitudes{gap:8px}
-    .attitudes button{font-size:14px;padding:10px 16px;min-height:44px;flex:1}
+    .attitudes button{font-size:15px;padding:10px 16px;min-height:44px;flex:1}
     .story-grid{grid-template-columns:1fr 1fr;gap:8px}
     .story-item{padding:10px 12px}
-    .story-item .t{font-size:14px;letter-spacing:1px}
+    .story-item .t{font-size:15px;letter-spacing:1px}
     .cards{grid-template-columns:1fr}
-    .dept-head h3{font-size:16px}
+    .dept-head h3{font-size:17px}
     .stamp{width:34px;height:34px;font-size:12px}
-    .summary-q{font-size:14px;line-height:1.8;padding:8px 0 8px 12px}
+    .summary-q{font-size:15px;line-height:1.8;padding:8px 0 8px 12px}
     .modal{padding:10px}
     .modal-box{padding:20px 16px}
     .lecture .lt{font-size:24px;letter-spacing:5px}
-    .lecture .lc{font-size:19px;line-height:2}
-    .milestone{padding:3px 10px;font-size:12px}
+    .lecture .lc{font-size:20px;line-height:2}
+    .milestone{padding:3px 10px;font-size:13px}
   }
   @media print{
     header,nav,.toolbar,.btn,.footer-note{display:none!important}
@@ -276,7 +277,7 @@ if ("serviceWorker" in navigator) {
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="footer-note">智囊精读 · v1.0 · 数据保存在本机浏览器</div>
+<div class="footer-note">智囊精读 · v1.3 · 数据保存在本机浏览器</div>
 
 <script>
 /* ═══════════ 篇目数据 · 十则精选（螺旋编排） ═══════════ */
