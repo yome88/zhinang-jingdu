@@ -278,7 +278,7 @@ if ("serviceWorker" in navigator) {
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="footer-note">智囊精读 · v1.5 · 数据保存在本机浏览器</div>
+<div class="footer-note">智囊精读 · v1.5.1 · 数据保存在本机浏览器</div>
 
 <script>
 /* ═══════════ 篇目数据 · 十则精选（螺旋编排） ═══════════ */
@@ -1703,7 +1703,11 @@ async function gtFetch(method, path, body){
     body: body ? JSON.stringify(Object.assign({access_token:c.token}, body)) : undefined
   });
   if(res.status === 404) return null;
-  if(!res.ok) throw new Error("云端返回 " + res.status);
+  if(!res.ok){
+    let detail = "";
+    try{ detail = (await res.text()).slice(0, 150); }catch(e){}
+    throw new Error("云端返回 " + res.status + (detail ? "：" + detail : "") + "（" + method + " " + path.split("?")[0] + "）");
+  }
   return res.json();
 }
 const SYNC_FILE = "zhinang-sync.json";
